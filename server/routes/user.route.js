@@ -7,6 +7,21 @@ const { error } = require("console")
 const userRouter=express.Router()
 
 
+userRouter.get("/", async (req, res) => {
+    try {
+        const users = await User.find()
+
+        if (users.length === 0) {
+            return res.status(404).json({ error: "No users found!" });
+        }
+
+        res.status(200).json(users);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Server error. Please try again later." });
+    }
+});
+
 
 userRouter.post("/register",async(req,res)=>{
     try {
