@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { type } = require("os");
+const { default: BloodTypeEnums } = require("../enums/blood");
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -20,7 +21,7 @@ const userSchema = new mongoose.Schema(
     bloodType: {
       type: String,
       required: true,
-      enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
+      enum: BloodTypeEnums,
     },
     termsAccepted: {
       type: Boolean,
