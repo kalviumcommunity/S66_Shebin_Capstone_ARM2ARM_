@@ -3,6 +3,9 @@ const mongoose=require("mongoose")
 require("dotenv").config()
 const cors=require("cors")
 const {userRouter}=require("./routes/user.route")
+const {requestRouter}=require("./routes/bloodRequest.route")
+const {findBloodRouter}=require("./routes/FindBlood.route")
+
 
 const app=express()
 app.use(express.json())
@@ -14,6 +17,8 @@ let connection=mongoose.connect(process.env.mongoURL)
 
 
 app.use("/user",userRouter)
+app.use("/BloodRequest",requestRouter)
+app.use("/findBlood",findBloodRouter)
 
 
 
