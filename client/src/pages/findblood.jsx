@@ -35,7 +35,7 @@ const Findblood = () => {
         setFilteredBloodBanks(bloodBankData);
       } catch (err) {
         console.error(err);
-        setError("Failed to fetch blood requests.");
+        setError("Failed to fetch Details.");
       } finally {
         setLoading(false);
       }
