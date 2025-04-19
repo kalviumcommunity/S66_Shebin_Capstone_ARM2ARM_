@@ -1,7 +1,7 @@
 import React from 'react';
 import { DrawerClose } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
-import { MapPin, User, Hospital } from 'lucide-react';
+import { MapPin, User, Hospital, Droplet, Tag } from 'lucide-react';
 
 const RequestDetails = ({ item }) => {
   return (
@@ -47,6 +47,24 @@ const RequestDetails = ({ item }) => {
         <div>
           <p className="text-sm font-medium">Contact</p>
           <p className="text-sm text-gray-700">{item.contactNumber}</p>
+        </div>
+      </div>
+
+      {/* Needed */}
+      <div className="flex items-start gap-3">
+        <Droplet className="text-gray-500 mt-1" />
+        <div>
+          <p className="text-sm font-medium">Needed:</p>
+          <p className="text-sm text-gray-700">{item.units} Units</p>
+        </div>
+      </div>
+
+      {/* Status */}
+      <div className="flex items-start gap-3">
+        <Tag className="text-gray-500 mt-1" />
+        <div>
+          <p className="text-sm font-medium">Status:</p>
+          <p className="text-sm text-gray-700">{item.status}</p>
         </div>
       </div>
 
