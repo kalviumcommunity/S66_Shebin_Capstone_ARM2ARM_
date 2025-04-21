@@ -27,6 +27,7 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       required: true,
     },
+    bloodRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: "Blood-Requests" }]
   },
   { timestamps: true }
 );
