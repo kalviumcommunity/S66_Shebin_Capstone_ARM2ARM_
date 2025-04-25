@@ -4,7 +4,7 @@ import TopNavBar from "../components/navbar";
 
 const MyDonations = () => {
     return (
-        <div className="h-screen flex flex-col py-2">
+        <div>
           <TopNavBar/>
           <div className="flex flex-1">
             <Sidebar/>

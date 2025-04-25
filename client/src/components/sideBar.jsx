@@ -19,14 +19,14 @@ const Sidebar = () => {
     { path: "/findBlood", label: "Find Blood", icon: <Search className="w-5 h-5" /> },
     { path: "/donate", label: "Donate", icon: <HeartHandshake className="w-5 h-5" /> },
     { path: "/donateCamps", label: "Donation Camps", icon: <CalendarDays className="w-5 h-5" /> },
-    { path: "/myDonations", label: "My Donations", icon: <Droplets className="w-5 h-5" /> },
-    { path: "/myRequests", label: "My Requests", icon: <FileHeart className="w-5 h-5" /> },
+    // { path: "/myDonations", label: "My Donations", icon: <Droplets className="w-5 h-5" /> },
+    // { path: "/myRequests", label: "My Requests", icon: <FileHeart className="w-5 h-5" /> },
     { path: "/leaderboard", label: "Leaderboard", icon: <Trophy className="w-5 h-5" /> },
     { path: "/profile", label: "Profile", icon: <User className="w-5 h-5" /> },
   ];
 
   return (
-    <div className="min-h-screen w-64 bg-white  px-4 py-6">
+    <div className="sticky left-0 h-[calc(100vh-3.5rem)] w-64 bg-white  px-4 py-6">
       
       <nav className="flex flex-col gap-2">
         {links.map((link) => {
