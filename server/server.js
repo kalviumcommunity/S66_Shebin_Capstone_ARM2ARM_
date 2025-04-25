@@ -1,5 +1,5 @@
 const express=require("express")
-// const DbConnection =require("./db/dbConnection")
+const DbConnection =require("./db/dbConnection")
 require("dotenv").config()
 const cors=require("cors")
 const {userRouter}=require("./routes/user.route")
@@ -11,7 +11,7 @@ const app=express()
 app.use(express.json())
 app.use(cors())
 
-// DbConnection()
+DbConnection()
 
 
 app.use("/user",userRouter)
