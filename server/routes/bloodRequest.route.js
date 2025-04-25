@@ -5,7 +5,37 @@ const mongoose=require("mongoose")
 let requestRouter=express.Router()
 
 
+requestRouter.get("/",async(req,res)=>{
+    try {
 
+        const requests=await BloodRequest.find().sort({ createdAt: -1 })
+        res.send({ "message": "Successfully retrieved the data from the database", data:requests});
+    } catch (error) {
+        console.error(error); 
+        res.status(500).send({ message:"Failed to retrieve the data" })
+    }
+})
+
+requestRouter.post("/",async(req,res)=>{
+    try {
+        const requestData=req.body
+        const requiredFields = ["requested_type", "name","contactNumber", "bloodType", "location", "units", "status"];
+        const missingFields = requiredFields.filter(field => !requestData[field]);
+        if (missingFields.length > 0) {
+            return res.status(400).json({ error: `Missing required fields: ${missingFields.join(", ")}` });
+        }
+        const newRequest = new BloodRequest({
+            ...requestData,
+        });
+
+        await newRequest.save()
+        res.status(201).json({message:"Request added successfully!",newRequest})
+
+    } catch (error) {
+        console.error(error); 
+        res.status(500).send({ message:"Failed to retrieve the data" })
+    }
+})
 
 requestRouter.put("/:id",async(req,res)=>{
     try {
