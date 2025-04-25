@@ -76,9 +76,36 @@ userRouter.post("/login",async(req,res)=>{
                 bloodType: user.bloodType
             }
         })
+        res.cookie("token",token,{
+            httpOnly:true,
+            secure:false
+        }).json({ message: "Login successful", user: { name: user.name, email: user.email, userId: user._id } });
+
     } catch (error) {
         console.error(error)
         res.status(500).json({ error: "Server error. Please try again later." });
+    }
+})
+
+
+// userRouter.post("/logout",(req,res)=>{
+//     res.clearCookie("token").json({ message: "Logged out" })
+// })
+
+
+userRouter.put("/:id",async(req,res)=>{
+    const {userId}=req.params
+    const {requestId}=  req.body
+
+    try {
+        const userReq=await User.findByIdAndUpdate(userId,{$addToSet:{bloodRequests:requestId}},{new:true})
+
+        if(!userReq){
+            return res.status(404).json({ message: "User not found" });
+        }
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({message: "Failed to add blood request to user"})
     }
 })
 

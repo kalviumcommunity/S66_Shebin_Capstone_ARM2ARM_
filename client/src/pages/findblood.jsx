@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MapPin, Search, Filter, Map, Users2, Droplet } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Drawer, DrawerContent } from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerTitle } from "@/components/ui/drawer";
 import Sidebar from "../components/sideBar";
 import TopNavBar from "../components/navbar";
 import RequestDetails from "../components/requestDetails";
@@ -19,6 +19,7 @@ const Findblood = () => {
   const [locationFilter, setLocationFilter] = useState("");
   const [selectedItem, setSelectedItem] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const drawerTitleRef = useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,8 +62,15 @@ const Findblood = () => {
     setIsDrawerOpen(true);
   };
 
+  // Focus the drawer title when the drawer opens
+  useEffect(() => {
+    if (isDrawerOpen && drawerTitleRef.current) {
+      drawerTitleRef.current.focus();
+    }
+  }, [isDrawerOpen]);
+
   return (
-    <div className="h-screen flex flex-col py-2">
+    <div>
       <TopNavBar />
       <div className="flex flex-1">
         <Sidebar />

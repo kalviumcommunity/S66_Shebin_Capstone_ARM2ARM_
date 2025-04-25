@@ -1,13 +1,11 @@
-import React from 'react';
-import { Bell, User } from 'lucide-react';
-
+import React from "react";
+import { Bell, User } from "lucide-react";
+import logo from "/logo.png";
 const TopNavBar = () => {
   return (
-    <div className="w-full h-18 bg-white  shadow-sm flex items-center justify-between px-6 py-1">
-      <div className="flex items-center gap-2">
-        <div className="bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm">
-          B+
-        </div>
+    <div className="sticky top-0 w-full bg-white h-14 flex items-center justify-between px-6 py-1">
+      <div className="flex items-center">
+        <img src={logo} className="size-12" />
         <h1 className="text-xl font-semibold text-gray-800">Arm2Arm</h1>
       </div>
 
