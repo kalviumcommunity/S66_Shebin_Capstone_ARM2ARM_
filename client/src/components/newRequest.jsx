@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import axios from "axios"
 import { CirclePlus } from 'lucide-react';
 import {Dialog,DialogContent,DialogFooter,DialogHeader,DialogTitle,DialogTrigger} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input";
@@ -21,8 +22,17 @@ const NewRequest = ({ onSubmit = (formData) => console.log("Submitted:", formDat
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = () => {
-    onSubmit(formData);
+  const handleSubmit = async() => {
+    // onSubmit(formData);
+    try {
+      const response = await axios.post("http://localhost:9000/BloodRequest", formData);
+      console.log("Request submitted:", response.data);
+      alert("Request submitted successfully");
+      onSubmit()
+    } catch (error) {
+      console.error(error)
+      alert("Failed to submit request");
+    }
   };
 
   return (
@@ -49,8 +59,8 @@ const NewRequest = ({ onSubmit = (formData) => console.log("Submitted:", formDat
                 <SelectValue placeholder="Select type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Donor">Donor</SelectItem>
-                <SelectItem value="Blood Bank">Blood Bank</SelectItem>
+                <SelectItem value="Hospital">Hospital</SelectItem>
+                <SelectItem value="Recipient">Recipients</SelectItem>
               </SelectContent>
             </Select>
           </div>

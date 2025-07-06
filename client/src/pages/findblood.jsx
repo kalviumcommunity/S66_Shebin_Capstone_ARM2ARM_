@@ -3,7 +3,7 @@ import axios from "axios";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MapPin, Search, Filter, Map, Users2, Droplet } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Drawer, DrawerContent, DrawerTitle } from "@/components/ui/drawer";
+import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import Sidebar from "../components/sideBar";
 import TopNavBar from "../components/navbar";
 import RequestDetails from "../components/requestDetails";
@@ -24,16 +24,31 @@ const Findblood = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:9000/findBlood");
-        const allData = response.data.data;
+        // Fetch data from /findBlood endpoint
+        const findBloodResponse = await axios.get("http://localhost:9000/findBlood");
+        const findBloodData = findBloodResponse.data.data;
 
-        const donorData = allData.filter((item) => item.requested_type === "Donor");
-        const bloodBankData = allData.filter((item) => item.requested_type === "Blood-Banks");
+        // Fetch all users from /user endpoint
+        const userResponse = await axios.get("http://localhost:9000/user");
+        const userData = userResponse.data; // Assuming it returns an array of users
 
-        setDonors(donorData);
-        setBloodBanks(bloodBankData);
-        setFilteredDonors(donorData);
-        setFilteredBloodBanks(bloodBankData);
+        // Filter findBloodData for donors and blood banks
+        const findBloodDonors = findBloodData.filter(item => item.requested_type === "Donor");
+        const findBloodBloodBanks = findBloodData.filter(item => item.requested_type === "Blood-Banks");
+
+        // Filter userData for donors and blood banks
+        const userDonors = userData.filter(user => user.requested_type === "Donor");
+        const userBloodBanks = userData.filter(user => user.requested_type === "Blood-Banks");
+
+        // Combine data from both sources
+        const allDonors = [...findBloodDonors, ...userDonors];
+        const allBloodBanks = [...findBloodBloodBanks, ...userBloodBanks];
+
+        // Set state with combined data
+        setDonors(allDonors);
+        setBloodBanks(allBloodBanks);
+        setFilteredDonors(allDonors);
+        setFilteredBloodBanks(allBloodBanks);
       } catch (err) {
         console.error(err);
         setError("Failed to fetch Details.");
@@ -62,7 +77,6 @@ const Findblood = () => {
     setIsDrawerOpen(true);
   };
 
-  // Focus the drawer title when the drawer opens
   useEffect(() => {
     if (isDrawerOpen && drawerTitleRef.current) {
       drawerTitleRef.current.focus();
