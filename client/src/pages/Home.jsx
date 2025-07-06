@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import HomeNavbar from "../components/HomeNavbar";
+import { InfiniteSlider } from '../components/infiniteSlider';
 import { Facebook, Twitter, Instagram,MapPin, Heart, ArrowRight, Info, Flame, Trophy, Building2, UserPlus, BellRing, Clock, Coffee, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 import men from "/men.png"
@@ -251,12 +252,14 @@ const Home = () => {
         </section>
 
         {/* Why Donate Blood */}
-        <section className="bg-[#a61919] py-16 md:py-28 text-white relative overflow-hidden ">
-          <div className="text-center px-6">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Donate Blood?</h2>
+        <div className="bg-[#a61919] md:py-10 text-white relative overflow-hidden ">
+
+          <div className="text-center px-6 ">
+            <h2 className="md:text-4xl font-bold mb-4">Why Donate Blood?</h2>
             <p className="text-red-100 mb-10 md:text-base">Discover the benefits and impact of blood donation</p>
           </div>
 
+          <InfiniteSlider speedOnHover={20} gap={24} className="py-16 md:py-10  relative overflow-hidden ">
           <div className="relative overflow-x-hidden ">
             <div className="flex gap-6 w-max animate-scroll-x group-hover:[animation-play-state:paused]">
               {[...cards, ...cards].map((card, i) => (
@@ -268,8 +271,10 @@ const Home = () => {
               ))}
             </div>
           </div>
-        </section>
-        
+          </InfiniteSlider>
+
+        </div>
+
         {/* Success Stories */}
         <section className="bg-white py-20 px-4 text-center">
           <span className="inline-block bg-red-100 text-red-600 font-semibold text-sm px-3 py-1 rounded-full mb-4">
@@ -312,8 +317,6 @@ const Home = () => {
         </section>
 
       </div>
-      
-
       
       <footer className="bg-white border-t mt-16 ">
         <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
