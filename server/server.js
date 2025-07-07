@@ -5,6 +5,8 @@ const cors=require("cors")
 const {userRouter}=require("./routes/user.route")
 const {requestRouter}=require("./routes/bloodRequest.route")
 const {findBloodRouter}=require("./routes/FindBlood.route")
+const {donationCampRouter}=require("./routes/donationCamp.route")
+const {smsRouter}=require("./routes/sendSmsRoute")
 
 
 const app=express()
@@ -17,6 +19,9 @@ DbConnection()
 app.use("/user",userRouter)
 app.use("/BloodRequest",requestRouter)
 app.use("/findBlood",findBloodRouter)
+app.use("/DonationCamps",donationCampRouter)
+app.use("/api",smsRouter)
+
 
 
 

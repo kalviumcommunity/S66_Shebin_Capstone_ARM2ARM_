@@ -13,24 +13,42 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    password: {
+    requested_type:{
       type: String,
       required: true,
-      min: 6,
+      enum: ["Donor", "Blood-Banks","Hospital","Recipient"]
+    },
+    age: {
+      type: Number,
+      min: 18,
+      max: 65,
+      required: true,
+    },
+    location:{
+      type: String,
+      required:true
+    },
+    weight: {
+      type: Number,
+      min: 45,
+      required: true,
     },
     bloodType: {
       type: String,
       required: true,
       enum: BloodTypeEnums,
     },
-    termsAccepted: {
-      type: Boolean,
+    contactNumber: {
+      type: String,
       required: true,
+      minlength: 10
     },
-    bloodRequests: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Blood-Requests"
-    }]
+
+    
+    // bloodRequests: [{
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "Blood-Requests",
+    // }]
     
   },
   { timestamps: true }
