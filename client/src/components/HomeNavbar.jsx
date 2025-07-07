@@ -14,7 +14,7 @@ const HomeNavbar = () => {
         { path: "/findBlood", label: "Find Blood" },
         { path: "/donate", label: "Donate" },
         { path: "/donationCamps", label: "Camps" },
-        { path: "/about", label: "About" },
+        { path: "/About", label: "About" },
     ];
 
     return (
