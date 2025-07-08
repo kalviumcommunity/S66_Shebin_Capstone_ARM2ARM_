@@ -24,23 +24,19 @@ const Findblood = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch data from /findBlood endpoint
-        const findBloodResponse = await axios.get("http://localhost:9000/findBlood");
+        const API_BASE_URL = import.meta.env.VITE_API_URL;
+        const findBloodResponse = await axios.get(`${API_BASE_URL}/findBlood`);
         const findBloodData = findBloodResponse.data.data;
 
-        // Fetch all users from /user endpoint
         const userResponse = await axios.get("http://localhost:9000/user");
-        const userData = userResponse.data; // Assuming it returns an array of users
+        const userData = userResponse.data; 
 
-        // Filter findBloodData for donors and blood banks
         const findBloodDonors = findBloodData.filter(item => item.requested_type === "Donor");
         const findBloodBloodBanks = findBloodData.filter(item => item.requested_type === "Blood-Banks");
 
-        // Filter userData for donors and blood banks
         const userDonors = userData.filter(user => user.requested_type === "Donor");
         const userBloodBanks = userData.filter(user => user.requested_type === "Blood-Banks");
 
-        // Combine data from both sources
         const allDonors = [...findBloodDonors, ...userDonors];
         const allBloodBanks = [...findBloodBloodBanks, ...userBloodBanks];
 
