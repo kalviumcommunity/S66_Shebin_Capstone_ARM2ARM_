@@ -19,9 +19,8 @@ DbConnection()
 app.use("/user",userRouter)
 app.use("/BloodRequest",requestRouter)
 app.use("/findBlood",findBloodRouter)
-app.use("/DonationCamps",donationCampRouter)
+app.use("/donationCamps",donationCampRouter)
 app.use("/api",smsRouter)
-
 
 
 
