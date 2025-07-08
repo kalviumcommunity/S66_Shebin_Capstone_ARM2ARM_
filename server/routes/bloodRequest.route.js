@@ -4,7 +4,6 @@ const mongoose=require("mongoose")
 
 const requestRouter=express.Router()
 
-
 requestRouter.get("/",async(req,res)=>{
     try {
 
@@ -19,7 +18,7 @@ requestRouter.get("/",async(req,res)=>{
 requestRouter.post("/",async(req,res)=>{
     try {
         const requestData=req.body
-        const requiredFields = ["requested_type", "name","contactNumber", "bloodType", "location", "units", "status"];
+        const requiredFields = ["requested_type", "name","contactNumber", "bloodType", "location", "units", "status","createdBy"];
         const missingFields = requiredFields.filter(field => !requestData[field]);
         if (missingFields.length > 0) {
             return res.status(400).json({ error: `Missing required fields: ${missingFields.join(", ")}` });
@@ -75,11 +74,5 @@ requestRouter.delete("/:id",async(req,res)=>{
         res.status(500).json({ error: "Server error during delete" });
     }
 })
-
-
-
-
-
-
 
 module.exports={requestRouter}

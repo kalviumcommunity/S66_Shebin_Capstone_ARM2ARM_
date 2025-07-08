@@ -7,8 +7,6 @@ const {requestRouter}=require("./routes/bloodRequest.route")
 const {findBloodRouter}=require("./routes/FindBlood.route")
 const {donationCampRouter}=require("./routes/donationCamp.route")
 const {smsRouter}=require("./routes/sendSmsRoute")
-const {smsRouter}=require("./routes/sendSmsRoute")
-const {donationCampRouter}=require("./routes/donationCamp.route")
 
 
 const app=express()

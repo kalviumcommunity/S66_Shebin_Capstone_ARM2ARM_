@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
 const ProfilePage = () => {
-    const { user, isLoaded } = useUser(); // Added isLoaded to ensure user data is ready
+    const { user, isLoaded } = useUser(); 
 
     const [formData, setFormData] = useState({
         name: "",
