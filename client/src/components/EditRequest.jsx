@@ -14,12 +14,13 @@ const EditRequest = ({ request, onSubmit }) => {
 
     const handleUpdate = async () => {
         try {
-        await axios.put(`http://localhost:9000/BloodRequest/${request._id}`, formData);
-        alert('Request updated successfully');
-        onSubmit();
+            const API_BASE_URL = import.meta.env.VITE_API_URL;
+            await axios.put(`${API_BASE_URL}/${request._id}`, formData);
+            alert('Request updated successfully');
+            onSubmit();
         } catch (error) {
-        console.error(error);
-        alert('Failed to update request');
+            console.error(error);
+            alert('Failed to update request');
         }
     };
 

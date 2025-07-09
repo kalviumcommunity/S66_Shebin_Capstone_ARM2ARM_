@@ -39,15 +39,15 @@ const NewDonationCamp = ({ onSubmit = (formData) => console.log("Submitted:", fo
     };
 
     const handleSubmit = async() => {
-        // onSubmit(formData);
         try {
-        const response = await axios.post("http://localhost:9000/DonationCamps", payload);
-        console.log("Request submitted:", response.data);
-        alert("Request submitted successfully");
-        onSubmit()
+            const API_BASE_URL = import.meta.env.VITE_API_URL;
+            const response = await axios.post(`${API_BASE_URL}/DonationCamps`, payload);
+            console.log("Request submitted:", response.data);
+            alert("Request submitted successfully");
+            onSubmit()
         } catch (error) {
-        console.error(error)
-        alert("Failed to submit request");
+            console.error(error)
+            alert("Failed to submit request");
         }
     };
 

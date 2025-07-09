@@ -16,6 +16,7 @@ import NewRequest from "../components/newRequest";
 import EditRequest from "../components/EditRequest";
 import { RequestCard } from '../components/RequestCard';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 
 const Donate = () => {
@@ -36,7 +37,7 @@ const Donate = () => {
 
   const fetchRequest = async () => {
     try {
-      const response = await axios.get('http://localhost:9000/BloodRequest');
+      const response = await axios.get(`${API_BASE_URL}/BloodRequest`);
       const reqData = response.data.data;
 
       const hospitalData = reqData.filter((item) => item.requested_type === 'Hospital');
@@ -82,7 +83,7 @@ const Donate = () => {
 
   const handleDelete = async (requestId) => {
     try {
-      await axios.delete(`http://localhost:9000/BloodRequest/${requestId}`);
+      await axios.delete(`${API_BASE_URL}/BloodRequest/${requestId}`);
       fetchRequest();
     } catch (error) {
       console.error(error);
@@ -252,6 +253,10 @@ const Donate = () => {
 
           <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
             <DialogContent>
+              <VisuallyHidden asChild>
+                <DialogTitle>Edit Blood Request</DialogTitle>
+                </VisuallyHidden>
+                <DialogDescription>Update the details of your blood request here.</DialogDescription>
               {editRequest && (
                 <EditRequest
                   request={editRequest}

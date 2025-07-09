@@ -48,8 +48,9 @@ const DonationCamps = () => {
     useEffect(()=>{
         const fetchData=async()=>{
             try {
+                const API_BASE_URL = import.meta.env.VITE_API_URL;
+                const response=await axios.get(`${API_BASE_URL}/DonationCamps`)
                 setLoading(true);
-                const response=await axios.get("http://localhost:9000/DonationCamps")
                 const allData = response.data.data;
                 setCampData(allData)
                 setFilteredData(allData)

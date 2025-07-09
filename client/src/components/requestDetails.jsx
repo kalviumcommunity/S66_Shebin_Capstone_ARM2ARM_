@@ -16,18 +16,16 @@ const RequestDetails = ({ item, context}) => {
   };
   const contactText = typeDisplay[item.requested_type] || item.requested_type;
 
-  // Show units and status only for Hospital and Recipient
   const showUnitsAndStatus = ["Hospital", "Recipient"].includes(item.requested_type);
 
-
-// Handle-Click
 const handleRequestClick=async()=>{
   const message= context==="donate" ? `Hello ${item.name},  I’ve seen your request and I’m available to donate blood. Please let me know how I can help."
 
 ` : `Hello ${item.name}, your blood type is urgently needed. Kindly respond soon.`
 
   try {
-    const response=await axios.post("http://localhost:9000/api/sendSms", {
+    const API_BASE_URL = import.meta.env.VITE_API_URL;
+    const response=await axios.post(`${API_BASE_URL}/api/sendSms`, {
       to:"+918139065748",
       message
     })
