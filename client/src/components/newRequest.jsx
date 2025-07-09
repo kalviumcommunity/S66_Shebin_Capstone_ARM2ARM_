@@ -30,8 +30,8 @@ const NewRequest = ({ onSubmit = (formData) => console.log("Submitted:", formDat
         ...formData,
         createdBy: user.id, 
       };
-
-      const response = await axios.post("http://localhost:9000/BloodRequest", payload);
+      const API_BASE_URL = import.meta.env.VITE_API_URL;
+      const response = await axios.post(`${API_BASE_URL}/BloodRequest`, payload);
       console.log("Request submitted:", response.data);
       alert("Request submitted successfully");
       onSubmit()

@@ -28,7 +28,7 @@ const Findblood = () => {
         const findBloodResponse = await axios.get(`${API_BASE_URL}/findBlood`);
         const findBloodData = findBloodResponse.data.data;
 
-        const userResponse = await axios.get("http://localhost:9000/user");
+        const userResponse = await axios.get(`${API_BASE_URL}/user`);
         const userData = userResponse.data; 
 
         const findBloodDonors = findBloodData.filter(item => item.requested_type === "Donor");
@@ -40,7 +40,6 @@ const Findblood = () => {
         const allDonors = [...findBloodDonors, ...userDonors];
         const allBloodBanks = [...findBloodBloodBanks, ...userBloodBanks];
 
-        // Set state with combined data
         setDonors(allDonors);
         setBloodBanks(allBloodBanks);
         setFilteredDonors(allDonors);
@@ -75,7 +74,7 @@ const Findblood = () => {
 
   useEffect(() => {
     if (isDrawerOpen && drawerTitleRef.current) {
-      drawerTitleRef.current.focus();
+      drawerTitleRef.current.focus({ preventScroll: true });
     }
   }, [isDrawerOpen]);
 
