@@ -9,11 +9,12 @@ import Dates from "./date"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import dayjs from "dayjs";
 import { TimePicker } from 'antd';
+import { useUser } from '@clerk/clerk-react';
 const format = 'h:mm A';
 
 
 const NewDonationCamp = ({ onSubmit = (formData) => console.log("Submitted:", formData) }) => {
-
+    const { user } = useUser();
     const [formData, setFormData] = useState({
         requested_type: "",
         name: "",
@@ -30,18 +31,20 @@ const NewDonationCamp = ({ onSubmit = (formData) => console.log("Submitted:", fo
         setFormData((prev) => ({ ...prev, [field]: value }));
     };
 
-    const payload = {
-        ...formData,
-        startDate: formData.startDate?.toISOString(),
-        endDate: formData.endDate?.toISOString(),
-        startTime: formData.startTime?.format("HH:mm"),
-        endTime: formData.endTime?.format("HH:mm")
-    };
+    
 
     const handleSubmit = async() => {
         try {
+            const payload = {
+                ...formData,
+                startDate: formData.startDate?.toISOString(),
+                endDate: formData.endDate?.toISOString(),
+                startTime: formData.startTime?.format("HH:mm"),
+                endTime: formData.endTime?.format("HH:mm"),
+                createdBy: user.id
+            };
             const API_BASE_URL = import.meta.env.VITE_API_URL;
-            const response = await axios.post(`${API_BASE_URL}/DonationCamps`, payload);
+            const response = await axios.post(`${API_BASE_URL}/donationCamps`, payload);
             console.log("Request submitted:", response.data);
             alert("Request submitted successfully");
             onSubmit()

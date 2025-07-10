@@ -159,10 +159,12 @@ const Findblood = () => {
                 <Filter className="w-4 h-4" />
                 Showing {filteredDonors.length + filteredBloodBanks.length} results
               </div>
-              <div className="flex items-center gap-1 text-red-600 cursor-pointer hover:underline">
+
+              {/* <div className="flex items-center gap-1 text-red-600 cursor-pointer hover:underline">
                 <Map className="w-4 h-4" />
                 View Map
-              </div>
+              </div> */}
+              
             </div>
           </div>
 

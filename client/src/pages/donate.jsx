@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { MapPin, Search, Users2, Hospital } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Drawer, DrawerContent } from '@/components/ui/drawer';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import {Dialog,DialogContent,DialogHeader,DialogTitle,DialogDescription} from "@/components/ui/dialog"
 import Sidebar from '../components/sideBar';
 import TopNavBar from '../components/navbar';
 import RequestDetails from '../components/requestDetails';
@@ -144,13 +144,13 @@ const Donate = () => {
               </div>
 
               <div className="mt-6 flex justify-center">
-                <berto
+                <button
                   className="w-80 bg-[#E53E3E] text-white px-6 py-2 rounded text-sm flex items-center justify-center gap-2 hover:bg-red-700 transition"
                   onClick={handleSearch}
                 >
                   <Search className="w-5 h-5" />
                   Search
-                </berto>
+                </button>
               </div>
             </div>
           </div>
@@ -253,9 +253,9 @@ const Donate = () => {
 
           <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
             <DialogContent>
-              <VisuallyHidden asChild>
+              <DialogHeader>
                 <DialogTitle>Edit Blood Request</DialogTitle>
-                </VisuallyHidden>
+                </DialogHeader>
                 <DialogDescription>Update the details of your blood request here.</DialogDescription>
               {editRequest && (
                 <EditRequest

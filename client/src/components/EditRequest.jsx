@@ -15,7 +15,7 @@ const EditRequest = ({ request, onSubmit }) => {
     const handleUpdate = async () => {
         try {
             const API_BASE_URL = import.meta.env.VITE_API_URL;
-            await axios.put(`${API_BASE_URL}/${request._id}`, formData);
+            await axios.put(`${API_BASE_URL}/BloodRequest/${request._id}`, formData);
             alert('Request updated successfully');
             onSubmit();
         } catch (error) {
