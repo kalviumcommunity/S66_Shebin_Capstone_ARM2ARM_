@@ -3,12 +3,12 @@ import axios from "axios";
 import Sidebar from "../components/sideBar";
 import TopNavBar from "../components/navbar";
 import { MapPin, Search,CalendarIcon} from "lucide-react";
-// import { Button } from "@/components/ui/button";
-// import { Calendar } from "@/components/ui/calendar";
-// import { Input } from "@/components/ui/input";
-// import {Popover,PopoverContent,PopoverTrigger,} from "@/components/ui/popover";
 import Dates from "../components/date"
 import NewDonationCamp from "../components/newCamp"
+import VerticalOptionsMenu from "../components/MoreVertical"
+import { Dialog, DialogContent } from "@/components/ui/dialog"
+import EditCamp from "../components/EditCamp"
+import { useUser } from '@clerk/clerk-react';
 
 function formatDate(date) {
     if (!date) return "";
@@ -19,52 +19,59 @@ function formatDate(date) {
     });
 }
 
-// function isValidDate(date) {
-//     return date instanceof Date && !isNaN(date.getTime());
-// }
-
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const DonationCamps = () => {
+    const { user } = useUser();
     const [locationFilter, setLocationFilter] = useState('');
-    // const [open, setOpen] = useState(false);
-    // const [date, setDate] = useState(new Date());
-    // const [month, setMonth] = useState(date);
-    // const [value, setValue] = useState(formatDate(date));
     const [campData, setCampData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [editCamp, setEditCamp] = useState(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     const handleSearch = () => {
-        const location = locationFilter.toLowerCase();
-    
+        const location = locationFilter.toLowerCase()
         const filtered = campData.filter(item =>
             (!location || item.location.toLowerCase().includes(location))
         );
-
         setFilteredData(filtered);
     };
 
-    useEffect(()=>{
-        const fetchData=async()=>{
-            try {
-                const API_BASE_URL = import.meta.env.VITE_API_URL;
-                const response=await axios.get(`${API_BASE_URL}/DonationCamps`)
-                setLoading(true);
-                const allData = response.data.data;
-                setCampData(allData)
-                setFilteredData(allData)
-
-            } catch (error) {
-                console.error("Failed to fetch camps", err);
-                setError("Something went wrong while fetching donation camps.");
-            }finally {
-                setLoading(false); 
-            }
+    const fetchData=async()=>{
+        try {
+            const response=await axios.get(`${API_BASE_URL}/donationCamps`)
+            setLoading(true);
+            const allData = response.data.data;
+            setCampData(allData)
+            setFilteredData(allData)
+        } catch (error) {
+            console.error("Failed to fetch camps", err);
+            setError("Something went wrong while fetching donation camps.");
+        }finally {
+            setLoading(false); 
         }
-
+    }
+    
+    useEffect(()=>{
         fetchData()
     },[])
+
+    const handleEdit = (camp) => {
+        setEditCamp(camp);
+        setIsEditModalOpen(true);
+    };
+
+    const handleDelete = async (campId) => {
+        try {
+            await axios.delete(`${API_BASE_URL}/donationCamps/${campId}`);
+            fetchData();
+        } catch (error) {
+            console.error(error);
+            alert('Failed to delete camp');
+        }
+    };
 
 
     return (
@@ -78,7 +85,7 @@ const DonationCamps = () => {
                     <h1 className="text-2xl font-bold py-1">Blood Donation Camps</h1>
                     <p className="text-gray-500 mb-4">Find and register for upcoming blood donation camps near you.</p>
                     </div>
-                    <NewDonationCamp />
+                    <NewDonationCamp onSubmit={fetchData}/>
                 </div>
 
                     <div className="p-4 bg-white rounded-lg shadow">
@@ -124,54 +131,67 @@ const DonationCamps = () => {
                             <p className="text-gray-500">No Camps Data Found</p>
                         ) :(
                             <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-2">
-                                {filteredData.map((camp) => (
-                                    <div key={camp._id} className="p-4 bg-white rounded shadow border-l-4 border-red-500 cursor-pointer">
-                                        <h3 className="text-lg font-bold ">{camp.name}</h3>
-                                        <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-                                            <span className="font-medium">{camp.organization}</span>
-                                            <span className="px-2 py-0.5 bg-gray-200 text-gray-800 rounded-full text-xs font-semibold">{camp.requested_type}</span>
-                                        </div>
-
-                                        {/* Date, Time, and Location */}
-                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm text-gray-700 my-2">
-                                            <div className="flex items-center gap-2">
+                            {filteredData.map((camp) => (
+                                <div key={camp._id} className="p-4 bg-white rounded shadow border-l-4 border-red-500 cursor-pointer relative min-h-[200px] overflow-visible">
+                                    <h3 className="text-lg font-bold">{camp.name}</h3>
+                                    <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                                        <span className="font-medium">{camp.organization}</span>
+                                        <span className="px-2 py-0.5 bg-gray-200 text-gray-800 rounded-full text-xs font-semibold">{camp.requested_type}</span>
+                                    </div>
+                        
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm text-gray-700 my-2">
+                                        <div className="flex items-center gap-2">
                                             <CalendarIcon className="w-4 h-4 text-red-500" />
                                             <div>
                                                 <div className="font-semibold">Date</div>
                                                 <div>{formatDate(new Date(camp.startDate))} - {formatDate(new Date(camp.endDate))}</div>
                                             </div>
-
-                                            </div>
-                                            <div className="flex items-center gap-2">
+                                        </div>
+                                        <div className="flex items-center gap-2">
                                             <CalendarIcon className="w-4 h-4 text-red-500" />
                                             <div>
                                                 <div className="font-semibold">Time</div>
                                                 <div>{camp.startTime} - {camp.endTime}</div>
                                             </div>
-                                            </div>
-
-                                            <div className="flex items-center gap-2">
+                                        </div>
+                                        <div className="flex items-center gap-2">
                                             <MapPin className="w-4 h-4 text-red-500" />
                                             <div>
                                                 <div className="font-semibold">Location</div>
                                                 <div>{camp.location}</div>
                                             </div>
-                                            </div>
                                         </div>
-
-                                        {/* Optional action buttons */}
-                                        {/* <div className="mt-3 flex justify-between items-center">
-                                            <Button variant="outline">View Details</Button>
-                                            <Button className="bg-red-500 text-white hover:bg-red-600">Register</Button>
-                                        </div> */}
                                     </div>
-                                ))}
-                            </div>
+                        
+                                    {user && camp.createdBy === user.id && (
+                                        <div className="absolute top-2 right-2 z-10">
+                                            <VerticalOptionsMenu
+                                                onEdit={() => handleEdit(camp)}
+                                                onDelete={() => handleDelete(camp._id)}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
                         )}
                     </div>
 
                 </div>
             </div>
+            <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+                <DialogContent>
+                    {editCamp && (
+                        <EditCamp
+                            camp={editCamp}
+                            onSubmit={() => {
+                                setIsEditModalOpen(false);
+                                fetchData();
+                            }}
+                        />
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
         )
 }
