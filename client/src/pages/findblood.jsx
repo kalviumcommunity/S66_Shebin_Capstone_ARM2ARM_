@@ -165,7 +165,7 @@ const Findblood = () => {
           <div className="py-6 sm:py-8">
             <h2 className="text-lg sm:text-xl font-semibold mb-4">Results</h2>
             <Tabs defaultValue="donors">
-              <TabsList className="bg-gray-100 rounded-full flex justify-start sm:justify-end mb-4 p-1 space-x-1 w-full overflow-x-auto">
+              {/* <TabsList className="bg-gray-100 rounded-full flex justify-start sm:justify-end mb-4 p-1 space-x-1 w-full overflow-x-auto">
                 <TabsTrigger
                   value="donors"
                   className="flex items-center px-3 py-1 sm:px-4 sm:py-2 rounded-full text-sm font-medium transition data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow text-gray-600 hover:bg-gray-200 whitespace-nowrap"
@@ -180,7 +180,26 @@ const Findblood = () => {
                   <Droplet size={16} className="mr-2" />
                   Blood Banks
                 </TabsTrigger>
-              </TabsList>
+              </TabsList> */}
+
+              <div className="w-full flex justify-end">
+                <TabsList className="bg-gray-100 rounded-full justify-end flex items-center p-1 space-x-1">
+                  <TabsTrigger
+                    value="donors"
+                    className="flex items-center px-4 py-2 rounded-full text-sm font-medium transition data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow text-gray-600 hover:bg-gray-200"
+                  >
+                    <Users2 size={16} className="mr-2" />
+                    Donors
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="blood-banks"
+                    className="flex items-center px-4 py-2 rounded-full text-sm font-medium transition data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow text-gray-600 hover:bg-gray-200"
+                  >
+                    <Droplet size={16} className="mr-2" />
+                    Blood Banks
+                  </TabsTrigger>
+                </TabsList>
+              </div>
 
               <TabsContent value="donors">
                 {loading ? (
