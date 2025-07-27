@@ -3,10 +3,9 @@ import axios from "axios";
 import { DrawerClose } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { MapPin, User, Hospital, Droplet, Tag } from 'lucide-react';
-import {Dialog,DialogTrigger,DialogContent,DialogHeader,DialogTitle,DialogFooter} from "@/components/ui/dialog";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
-
-const RequestDetails = ({ item, context}) => {
+const RequestDetails = ({ item, context }) => {
   const [openDialog, setOpenDialog] = React.useState(false);
   const typeDisplay = {
     "Donor": "Donor",
@@ -15,44 +14,40 @@ const RequestDetails = ({ item, context}) => {
     "Recipient": "Recipient"
   };
   const contactText = typeDisplay[item.requested_type] || item.requested_type;
-
   const showUnitsAndStatus = ["Hospital", "Recipient"].includes(item.requested_type);
 
-const handleRequestClick=async()=>{
-  const message= context==="donate" ? `Hello ${item.name},  I’ve seen your request and I’m available to donate blood. Please let me know how I can help."
-
-` : `Hello ${item.name}, your blood type is urgently needed. Kindly respond soon.`
-
-  try {
-    const API_BASE_URL = import.meta.env.VITE_API_URL;
-    const response=await axios.post(`${API_BASE_URL}/api/sendSms`, {
-      to:"+918139065748",
-      message
-    })
-
-    if (response.data.success) {
-      alert("SMS sent successfully!");
-    } else {
-      alert("Failed to send SMS.");
+  const handleRequestClick = async () => {
+    const message = context === "donate"
+      ? `Hello ${item.name}, I’ve seen your request and I’m available to donate blood. Please let me know how I can help.`
+      : `Hello ${item.name}, your blood type is urgently needed. Kindly respond soon.`;
+    try {
+      const API_BASE_URL = import.meta.env.VITE_API_URL;
+      const response = await axios.post(`${API_BASE_URL}/api/sendSms`, {
+        to: "+918139065748",
+        message
+      });
+      if (response.data.success) {
+        alert("SMS sent successfully!");
+      } else {
+        alert("Failed to send SMS.");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("An error occurred while sending the SMS.");
     }
-
-  } catch (error) {
-    console.error(error)
-    alert("An error occurred while sending the SMS.");
-  }
-}
+  };
 
   return (
-    <div className="p-8 bg-gradient-to-b from-gray-50 to-white min-h-screen flex justify-center">
-      <div className="w-full max-w-lg space-y-6 bg-white rounded-xl  p-6">
+    <div className="p-4 sm:p-6 md:p-8 bg-gradient-to-b from-gray-50 to-white min-h-screen flex justify-center">
+      <div className="w-full max-w-lg space-y-4 sm:space-y-6 bg-white rounded-xl p-4 sm:p-6">
         {/* Close Button */}
         <div className="flex justify-end">
           <DrawerClose asChild>
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               className="rounded-full p-2 hover:bg-red-100 hover:text-red-600 transition-colors"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </Button>
@@ -60,25 +55,25 @@ const handleRequestClick=async()=>{
         </div>
 
         {/* Title */}
-        <div className="text-2xl font-bold text-gray-800 border-b-2 border-red-500 pb-2">
+        <div className="text-lg sm:text-2xl font-bold text-gray-800 border-b-2 border-red-500 pb-2">
           Details
         </div>
 
         {/* Information Section */}
-        <div className="flex flex-col gap-4 bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-4 bg-gray-50 p-3 sm:p-4 rounded-lg shadow-sm border border-gray-200">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 flex-1 overflow-hidden">
               {["Donor", "Recipient"].includes(item.requested_type) ? (
-                <User className="text-red-500 w-6 h-6" />
+                <User className="text-red-500 w-5 h-5 sm:w-6 sm:h-6" />
               ) : (
-                <Hospital className="text-red-500 w-6 h-6" />
+                <Hospital className="text-red-500 w-5 h-5 sm:w-6 sm:h-6" />
               )}
-              <div>
-                <h2 className="text-xl font-semibold text-gray-800">{item.name}</h2>
-                <p className="text-sm text-gray-500">{contactText}</p>
+              <div className="overflow-hidden">
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-800 truncate">{item.name}</h2>
+                <p className="text-xs sm:text-sm text-gray-500">{contactText}</p>
               </div>
             </div>
-            <div className="text-red-600 font-bold text-lg bg-red-100 px-3 py-1 rounded-full">
+            <div className="text-red-600 font-bold text-base sm:text-lg bg-red-100 px-2 py-1 sm:px-3 sm:py-1 rounded-full">
               {item.bloodType}
             </div>
           </div>
@@ -86,19 +81,19 @@ const handleRequestClick=async()=>{
 
         {/* Location */}
         <div className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-          <MapPin className="text-gray-500 mt-1 w-5 h-5" />
+          <MapPin className="text-gray-500 mt-1 w-4 h-4 sm:w-5 sm:h-5" />
           <div>
             <p className="text-sm font-medium text-gray-700">Location</p>
-            <p className="text-sm text-gray-600">{item.location}</p>
+            <p className="text-xs sm:text-sm text-gray-600">{item.location}</p>
           </div>
         </div>
 
         {/* Contact */}
         <div className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-          <User className="text-gray-500 mt-1 w-5 h-5" />
+          <User className="text-gray-500 mt-1 w-4 h-4 sm:w-5 sm:h-5" />
           <div>
             <p className="text-sm font-medium text-gray-700">Contact</p>
-            <p className="text-sm text-gray-600">{item.contactNumber}</p>
+            <p className="text-xs sm:text-sm text-gray-600">{item.contactNumber}</p>
           </div>
         </div>
 
@@ -107,19 +102,19 @@ const handleRequestClick=async()=>{
           <>
             {/* Needed */}
             <div className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-              <Droplet className="text-red-500 mt-1 w-5 h-5" />
+              <Droplet className="text-red-500 mt-1 w-4 h-4 sm:w-5 sm:h-5" />
               <div>
                 <p className="text-sm font-medium text-gray-700">Needed:</p>
-                <p className="text-sm text-gray-600">{item.units} Units</p>
+                <p className="text-xs sm:text-sm text-gray-600">{item.units} Units</p>
               </div>
             </div>
 
             {/* Status */}
             <div className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-              <Tag className="text-red-500 mt-1 w-5 h-5" />
+              <Tag className="text-red-500 mt-1 w-4 h-4 sm:w-5 sm:h-5" />
               <div>
                 <p className="text-sm font-medium text-gray-700">Status:</p>
-                <p className="text-sm text-gray-600">{item.status}</p>
+                <p className="text-xs sm:text-sm text-gray-600">{item.status}</p>
               </div>
             </div>
           </>
@@ -127,46 +122,44 @@ const handleRequestClick=async()=>{
 
         {/* Action Buttons */}
         <div className="flex flex-col gap-3">
-          <Button 
+          <Button
             onClick={handleRequestClick}
-            className="bg-[#E53E3E] hover:bg-red-700 text-white font-semibold w-full py-3 rounded-lg shadow-md transition-all"
+            className="bg-[#E53E3E] hover:bg-red-700 text-white font-semibold w-full py-2 sm:py-3 rounded-lg shadow-md transition-all"
           >
             Respond to Request
           </Button>
 
-            {/* Contact button */}
-            <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-              <DialogTrigger asChild>
+          {/* Contact button */}
+          <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+            <DialogTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-full text-gray-700 border-gray-300 hover:bg-gray-100 hover:border-red-500 hover:text-red-600 font-semibold py-2 sm:py-3 rounded-lg transition-all"
+              >
+                Call {contactText}
+              </Button>
+            </DialogTrigger>
+
+            <DialogContent className="w-full sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Confirm Call</DialogTitle>
+              </DialogHeader>
+              <div className="py-2 text-sm sm:text-base">
+                Do you want to call <strong>{item.name}</strong> at <strong>{item.contactNumber}</strong>?
+              </div>
+              <DialogFooter className="flex flex-col sm:flex-row gap-2">
+                <Button variant="outline" onClick={() => setOpenDialog(false)}>Cancel</Button>
                 <Button
-                  variant="outline"
-                  className="w-full text-gray-700 border-gray-300 hover:bg-gray-100 hover:border-red-500 hover:text-red-600 font-semibold py-3 rounded-lg transition-all"
+                  onClick={() => {
+                    window.location.href = `tel:${item.contactNumber}`;
+                  }}
+                  className="bg-red-600 hover:bg-red-700 text-white"
                 >
-                  Call {contactText}
+                  Call Now
                 </Button>
-              </DialogTrigger>
-
-              <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                  <DialogTitle>Confirm Call</DialogTitle>
-                </DialogHeader>
-                <div className="py-2">
-                  Do you want to call <strong>{item.name}</strong> at <strong>{item.contactNumber}</strong>?
-                </div>
-                <DialogFooter className="flex gap-2">
-                  <Button variant="outline" onClick={() => setOpenDialog(false)}>Cancel</Button>
-                  <Button
-                    onClick={() => {
-                      window.location.href = `tel:${item.contactNumber}`;
-                    }}
-                    className="bg-red-600 hover:bg-red-700 text-white"
-                  >
-                    Call Now
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-
-
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </div>
