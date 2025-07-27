@@ -6,10 +6,10 @@ import {Dialog,DialogContent,DialogFooter,DialogHeader,DialogTitle,DialogTrigger
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import {Select,SelectTrigger,SelectValue,SelectContent,SelectItem} from "@/components/ui/select";
 
 const NewRequest = ({ onSubmit = (formData) => console.log("Submitted:", formData) }) => {
-  const { user } = useUser(); 
+  const { user } = useUser();
   const [formData, setFormData] = useState({
     requested_type: "",
     name: "",
@@ -24,11 +24,11 @@ const NewRequest = ({ onSubmit = (formData) => console.log("Submitted:", formDat
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = async() => {
+  const handleSubmit = async () => {
     try {
       const payload = {
         ...formData,
-        createdBy: user.id, 
+        createdBy: user.id,
       };
       const API_BASE_URL = import.meta.env.VITE_API_URL;
       const response = await axios.post(`${API_BASE_URL}/BloodRequest`, payload);
@@ -44,47 +44,52 @@ const NewRequest = ({ onSubmit = (formData) => console.log("Submitted:", formDat
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="bg-[#E53E3E] hover:bg-red-700 text-white font-semibold px-6 py-2 rounded-lg shadow">
-            <CirclePlus className="mr-2" />
-            New Request
+        <Button className="bg-[#E53E3E] hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-lg shadow flex items-center">
+          <CirclePlus className="mr-2" />
+          New Request
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-[520px] rounded-2xl p-6">
+      <DialogContent className="w-full max-w-sm sm:max-w-md rounded-2xl p-5">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-red-600">
+          <DialogTitle className="text-lg sm:text-xl font-bold text-red-600">
             Create New Blood Request
           </DialogTitle>
         </DialogHeader>
 
-        <div className="grid gap-5 py-4">
+        <div className="grid gap-4 py-4">
           <div className="flex flex-col gap-1">
             <Label className="text-sm font-medium">Requested Type</Label>
             <Select onValueChange={(val) => handleChange("requested_type", val)}>
-              <SelectTrigger className="rounded-md">
+              <SelectTrigger className="w-full rounded-md">
                 <SelectValue placeholder="Select type" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="Hospital">Hospital</SelectItem>
-                <SelectItem value="Recipient">Recipients</SelectItem>
+                <SelectItem value="Recipient">Recipient</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="flex flex-col gap-1">
             <Label className="text-sm font-medium">Name</Label>
-            <Input placeholder="Enter name" onChange={(e) => handleChange("name", e.target.value)} />
+            <Input className="w-full" placeholder="Enter name" onChange={(e) => handleChange("name", e.target.value)} />
           </div>
 
           <div className="flex flex-col gap-1">
             <Label className="text-sm font-medium">Contact Number</Label>
-            <Input type="number" placeholder="Enter contact number" onChange={(e) => handleChange("contactNumber", e.target.value)} />
+            <Input
+              className="w-full"
+              type="number"
+              placeholder="Enter contact number"
+              onChange={(e) => handleChange("contactNumber", e.target.value)}
+            />
           </div>
 
           <div className="flex flex-col gap-1">
             <Label className="text-sm font-medium">Blood Type</Label>
             <Select onValueChange={(val) => handleChange("bloodType", val)}>
-              <SelectTrigger className="rounded-md">
+              <SelectTrigger className="w-full rounded-md">
                 <SelectValue placeholder="Select blood type" />
               </SelectTrigger>
               <SelectContent>
@@ -97,18 +102,23 @@ const NewRequest = ({ onSubmit = (formData) => console.log("Submitted:", formDat
 
           <div className="flex flex-col gap-1">
             <Label className="text-sm font-medium">Location</Label>
-            <Input placeholder="Enter location" onChange={(e) => handleChange("location", e.target.value)} />
+            <Input className="w-full" placeholder="Enter location" onChange={(e) => handleChange("location", e.target.value)} />
           </div>
 
           <div className="flex flex-col gap-1">
             <Label className="text-sm font-medium">Units Required</Label>
-            <Input type="number" placeholder="Number of units" onChange={(e) => handleChange("units", e.target.value)} />
+            <Input
+              className="w-full"
+              type="number"
+              placeholder="Number of units"
+              onChange={(e) => handleChange("units", e.target.value)}
+            />
           </div>
 
           <div className="flex flex-col gap-1">
             <Label className="text-sm font-medium">Urgency Status</Label>
             <Select onValueChange={(val) => handleChange("status", val)}>
-              <SelectTrigger className="rounded-md">
+              <SelectTrigger className="w-full rounded-md">
                 <SelectValue placeholder="Select urgency" />
               </SelectTrigger>
               <SelectContent>
@@ -124,7 +134,7 @@ const NewRequest = ({ onSubmit = (formData) => console.log("Submitted:", formDat
         <DialogFooter>
           <Button
             onClick={handleSubmit}
-            className="w-full bg-red-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-md"
+            className="w-full bg-red-600 hover:bg-green-700 text-white font-semibold py-2 rounded-md"
           >
             Submit Request
           </Button>
