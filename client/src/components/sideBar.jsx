@@ -8,17 +8,19 @@ import {
   Droplets,
   FileHeart,
   Trophy,
-  User
+  User,
+  HouseIcon
 } from 'lucide-react';
 
 const Sidebar = () => {
   const location = useLocation();
 
   const links = [
+    { path: "/", label: "Home", icon: <HouseIcon className="w-5 h-5" /> },
     { path: "/dashboard", label: "Dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
     { path: "/findBlood", label: "Find Blood", icon: <Search className="w-5 h-5" /> },
     { path: "/donate", label: "Donate", icon: <HeartHandshake className="w-5 h-5" /> },
-    { path: "/donateCamps", label: "Donation Camps", icon: <CalendarDays className="w-5 h-5" /> },
+    { path: "/donationCamps", label: "Donation Camps", icon: <CalendarDays className="w-5 h-5" /> },
     // { path: "/myDonations", label: "My Donations", icon: <Droplets className="w-5 h-5" /> },
     // { path: "/myRequests", label: "My Requests", icon: <FileHeart className="w-5 h-5" /> },
     { path: "/leaderboard", label: "Leaderboard", icon: <Trophy className="w-5 h-5" /> },

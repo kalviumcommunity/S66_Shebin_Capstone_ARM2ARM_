@@ -15,10 +15,9 @@ const Login = () => {
         }
 
         const userType = user?.publicMetadata?.userType;
-        if (userType === "donor") {
-            return "/findBlood";
-        }
-        return "/signUp";
+        if (userType === "donor") return "/findBlood";
+        if (userType === "admin") return "/admin";
+        return "/profile";
     };
 
     return (

@@ -3,16 +3,20 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
+import { useUser } from '@clerk/clerk-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { MapPin, Search, Users2, Hospital } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Drawer, DrawerContent } from '@/components/ui/drawer';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import Sidebar from '../components/sideBar';
 import TopNavBar from '../components/navbar';
 import RequestDetails from '../components/requestDetails';
+import NewRequest from "../components/newRequest";
+import VerticalOptionsMenu from "../components/MoreVertical";
+import EditRequest from "../components/EditRequest";
 
-
-const RequestCard = ({ request, onClick }) => {
+const RequestCard = ({ request, onClick, onEdit, onDelete }) => {
   const getStatusClass = (status) => {
     switch (status) {
       case 'Critical':
@@ -30,8 +34,7 @@ const RequestCard = ({ request, onClick }) => {
 
   return (
     <div
-      key={request._id}
-      className="p-4 bg-white rounded-lg shadow-md cursor-pointer"
+      className="relative p-4 bg-white rounded-lg shadow-md cursor-pointer"
       onClick={() => onClick(request)}
     >
       <div className="flex items-center justify-between mb-2">
@@ -43,6 +46,7 @@ const RequestCard = ({ request, onClick }) => {
           {request.status}
         </span>
       </div>
+
       <div className="flex items-center mb-2 text-sm text-gray-600">
         <svg
           className="w-4 h-4 mr-1"
@@ -62,46 +66,58 @@ const RequestCard = ({ request, onClick }) => {
         <span className="mx-1">•</span>
         <span>{dayjs(request.createdAt).fromNow()}</span>
       </div>
+
       <p className="text-sm text-red-500 mb-2">Needed: {request.units} units</p>
       <p className="text-sm text-gray-600">
         Contact: <span className="font-medium">{request.contactNumber}</span>
       </p>
+
+      {onEdit && onDelete && (
+        <div className="absolute bottom-2 right-2 z-10">
+          <VerticalOptionsMenu onEdit={onEdit} onDelete={onDelete} />
+        </div>
+      )}
     </div>
   );
 };
 
 const Donate = () => {
+  const { user } = useUser();
   const [hospitals, setHospitals] = useState([]);
   const [recipients, setRecipients] = useState([]);
   const [filteredHospital, setFilteredHospital] = useState([]);
   const [filteredRecipients, setFilteredRecipients] = useState([]);
+  const [statusFilter, setStatusFilter] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [bloodTypeFilter, setBloodTypeFilter] = useState('');
   const [locationFilter, setLocationFilter] = useState('');
   const [selectedItem, setSelectedItem] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [editRequest, setEditRequest] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const fetchRequest = async () => {
+    try {
+      const response = await axios.get('http://localhost:9000/BloodRequest');
+      const reqData = response.data.data;
+
+      const hospitalData = reqData.filter((item) => item.requested_type === 'Hospital');
+      const recipientData = reqData.filter((item) => item.requested_type === 'Recipient');
+
+      setHospitals(hospitalData);
+      setRecipients(recipientData);
+      setFilteredHospital(hospitalData);
+      setFilteredRecipients(recipientData);
+    } catch (error) {
+      console.error(error);
+      setError('Failed to fetch blood requests.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchRequest = async () => {
-      try {
-        const response = await axios.get('http://localhost:9000/BloodRequest');
-        const reqData = response.data.data;
-
-        const hospitalData = reqData.filter((item) => item.requested_type === 'Hospital');
-        const recipientData = reqData.filter((item) => item.requested_type === 'Recipient');
-
-        setHospitals(hospitalData);
-        setRecipients(recipientData);
-        setFilteredHospital(hospitalData);
-        setFilteredRecipients(recipientData);
-      } catch (error) {
-        console.error(error);
-        setError('Failed to fetch blood requests.');
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchRequest();
   }, []);
 
@@ -122,14 +138,38 @@ const Donate = () => {
     setIsDrawerOpen(true);
   };
 
+  const handleEdit = (request) => {
+    setEditRequest(request);
+    setIsEditModalOpen(true);
+  };
+
+  const handleDelete = async (requestId) => {
+    try {
+      await axios.delete(`http://localhost:9000/BloodRequest/${requestId}`);
+      fetchRequest();
+    } catch (error) {
+      console.error(error);
+      alert('Failed to delete request');
+    }
+  };
+
+  if (!user) {
+    return <div>Loading user data...</div>;
+  }
+
   return (
     <div>
       <TopNavBar />
       <div className="flex flex-1">
         <Sidebar />
         <div className="flex-1 p-6 bg-gray-50 overflow-y-auto">
-          <h1 className="text-2xl font-bold py-1">Donate Blood</h1>
-          <p className="text-gray-500 mb-4">Your Donation Information</p>
+          <div className='flex items-center justify-between mb-4'>
+            <div>
+              <h1 className="text-2xl font-bold py-1">Donate Blood</h1>
+              <p className="text-gray-500 mb-4">Your Donation Information</p>
+            </div>
+            <NewRequest onSubmit={fetchRequest} />
+          </div>
 
           <div className="p-4 bg-white rounded-lg shadow">
             <div className="flex flex-wrap items-center gap-4 mb-2">
@@ -166,13 +206,13 @@ const Donate = () => {
               </div>
 
               <div className="mt-6 flex justify-center">
-                <button
+                <berto
                   className="w-80 bg-[#E53E3E] text-white px-6 py-2 rounded text-sm flex items-center justify-center gap-2 hover:bg-red-700 transition"
                   onClick={handleSearch}
                 >
                   <Search className="w-5 h-5" />
                   Search
-                </button>
+                </berto>
               </div>
             </div>
           </div>
@@ -180,7 +220,29 @@ const Donate = () => {
           <div className="flex flex-col py-10 h-20">
             <h2 className="text-lg font-semibold">Donation Request</h2>
             <Tabs defaultValue="hospital" className="h-10">
-              <div className="w-full flex justify-end">
+              <div className="w-full flex items-center justify-between gap-x-4 my-4">
+                <div className="flex flex-col w-90 ">
+                  <Select
+                    onValueChange={(value) => {
+                      setStatusFilter(value);
+                      const filteredHospitals = hospitals.filter((item) => !value || item.status === value);
+                      const filteredRecipients = recipients.filter((item) => !value || item.status === value);
+                      setFilteredHospital(filteredHospitals);
+                      setFilteredRecipients(filteredRecipients);
+                    }}
+                  >
+                    <SelectTrigger className="w-35 border border-gray-400 px-3 py-2 text-sm rounded-lg">
+                      <SelectValue placeholder="Select Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Critical">Critical</SelectItem>
+                      <SelectItem value="High">High</SelectItem>
+                      <SelectItem value="Medium">Medium</SelectItem>
+                      <SelectItem value="Low">Low</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <TabsList className="bg-gray-100 rounded-full justify-end flex items-center p-1 space-x-1">
                   <TabsTrigger
                     value="hospital"
@@ -209,7 +271,13 @@ const Donate = () => {
                 ) : (
                   <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                     {filteredHospital.map((request) => (
-                      <RequestCard key={request._id} request={request} onClick={handleCardClick} />
+                      <RequestCard
+                        key={request._id}
+                        request={request}
+                        onClick={handleCardClick}
+                        onEdit={request.createdBy === user.id ? () => handleEdit(request) : null}
+                        onDelete={request.createdBy === user.id ? () => handleDelete(request._id) : null}
+                      />
                     ))}
                   </div>
                 )}
@@ -225,7 +293,13 @@ const Donate = () => {
                 ) : (
                   <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                     {filteredRecipients.map((request) => (
-                      <RequestCard key={request._id} request={request} onClick={handleCardClick} />
+                      <RequestCard
+                        key={request._id}
+                        request={request}
+                        onClick={handleCardClick}
+                        onEdit={request.createdBy === user.id ? () => handleEdit(request) : null}
+                        onDelete={request.createdBy === user.id ? () => handleDelete(request._id) : null}
+                      />
                     ))}
                   </div>
                 )}
@@ -235,9 +309,23 @@ const Donate = () => {
 
           <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen} direction="right">
             <DrawerContent>
-              {selectedItem && <RequestDetails item={selectedItem} />}
+              {selectedItem && <RequestDetails item={selectedItem} context="donate" />}
             </DrawerContent>
           </Drawer>
+
+          <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+            <DialogContent>
+              {editRequest && (
+                <EditRequest
+                  request={editRequest}
+                  onSubmit={() => {
+                    setIsEditModalOpen(false);
+                    fetchRequest();
+                  }}
+                />
+              )}
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </div>

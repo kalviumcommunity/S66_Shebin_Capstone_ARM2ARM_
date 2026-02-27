@@ -12,12 +12,15 @@ const SignUpComponent = () => {
     ? `/checkout?step=1&id=${courseId}&showSignUp=false`
     : "/login";
 
-  const getRedirectUrl = () => {
-    const userType = user?.publicMetadata?.userType;
-    if (userType === "donor") {
-      return "/findBlood";
-    }
-    return "/signUp";
+    const getRedirectUrl = () => {
+      if (isCheckoutPage) {
+          return `/checkout?step=2&id=${courseId}`;
+      }
+
+      const userType = user?.publicMetadata?.userType;
+      if (userType === "donor") return "/findBlood";
+      if (userType === "admin") return "/admin";
+      return "/profile";
   };
 
   return (

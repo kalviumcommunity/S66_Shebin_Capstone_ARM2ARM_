@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import axios from "axios"
+import { useUser } from "@clerk/clerk-react";
 import { CirclePlus } from 'lucide-react';
 import {Dialog,DialogContent,DialogFooter,DialogHeader,DialogTitle,DialogTrigger} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input";
@@ -8,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 
 const NewRequest = ({ onSubmit = (formData) => console.log("Submitted:", formData) }) => {
+  const { user } = useUser(); 
   const [formData, setFormData] = useState({
     requested_type: "",
     name: "",
@@ -23,9 +25,13 @@ const NewRequest = ({ onSubmit = (formData) => console.log("Submitted:", formDat
   };
 
   const handleSubmit = async() => {
-    // onSubmit(formData);
     try {
-      const response = await axios.post("http://localhost:9000/BloodRequest", formData);
+      const payload = {
+        ...formData,
+        createdBy: user.id, 
+      };
+
+      const response = await axios.post("http://localhost:9000/BloodRequest", payload);
       console.log("Request submitted:", response.data);
       alert("Request submitted successfully");
       onSubmit()

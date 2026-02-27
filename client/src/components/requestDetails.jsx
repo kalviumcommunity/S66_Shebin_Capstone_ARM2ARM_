@@ -1,9 +1,13 @@
 import React from 'react';
+import axios from "axios";
 import { DrawerClose } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { MapPin, User, Hospital, Droplet, Tag } from 'lucide-react';
+import {Dialog,DialogTrigger,DialogContent,DialogHeader,DialogTitle,DialogFooter} from "@/components/ui/dialog";
 
-const RequestDetails = ({ item }) => {
+
+const RequestDetails = ({ item, context}) => {
+  const [openDialog, setOpenDialog] = React.useState(false);
   const typeDisplay = {
     "Donor": "Donor",
     "Blood-Banks": "Blood Bank",
@@ -17,8 +21,27 @@ const RequestDetails = ({ item }) => {
 
 
 // Handle-Click
-const handleRequestClick=async(requestId)=>{
-  
+const handleRequestClick=async()=>{
+  const message= context==="donate" ? `Hello ${item.name},  I’ve seen your request and I’m available to donate blood. Please let me know how I can help."
+
+` : `Hello ${item.name}, your blood type is urgently needed. Kindly respond soon.`
+
+  try {
+    const response=await axios.post("http://localhost:9000/api/sendSms", {
+      to:"+918139065748",
+      message
+    })
+
+    if (response.data.success) {
+      alert("SMS sent successfully!");
+    } else {
+      alert("Failed to send SMS.");
+    }
+
+  } catch (error) {
+    console.error(error)
+    alert("An error occurred while sending the SMS.");
+  }
 }
 
   return (
@@ -107,16 +130,45 @@ const handleRequestClick=async(requestId)=>{
         {/* Action Buttons */}
         <div className="flex flex-col gap-3">
           <Button 
+            onClick={handleRequestClick}
             className="bg-[#E53E3E] hover:bg-red-700 text-white font-semibold w-full py-3 rounded-lg shadow-md transition-all"
           >
             Respond to Request
           </Button>
-          <Button 
-            variant="outline" 
-            className="w-full text-gray-700 border-gray-300 hover:bg-gray-100 hover:border-red-500 hover:text-red-600 font-semibold py-3 rounded-lg transition-all"
-          >
-            Contact {contactText}
-          </Button>
+
+            {/* Contact button */}
+            <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full text-gray-700 border-gray-300 hover:bg-gray-100 hover:border-red-500 hover:text-red-600 font-semibold py-3 rounded-lg transition-all"
+                >
+                  Call {contactText}
+                </Button>
+              </DialogTrigger>
+
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Confirm Call</DialogTitle>
+                </DialogHeader>
+                <div className="py-2">
+                  Do you want to call <strong>{item.name}</strong> at <strong>{item.contactNumber}</strong>?
+                </div>
+                <DialogFooter className="flex gap-2">
+                  <Button variant="outline" onClick={() => setOpenDialog(false)}>Cancel</Button>
+                  <Button
+                    onClick={() => {
+                      window.location.href = `tel:${item.contactNumber}`;
+                    }}
+                    className="bg-red-600 hover:bg-red-700 text-white"
+                  >
+                    Call Now
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+
         </div>
       </div>
     </div>
