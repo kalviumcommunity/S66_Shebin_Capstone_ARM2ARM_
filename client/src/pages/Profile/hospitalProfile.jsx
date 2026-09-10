@@ -258,7 +258,7 @@ import NewRequest from "../components/newRequest"
 import VerticalOptionsMenu from "../components/MoreVertical"
 
 
-const RequestCard = ({ request, onClick, onEditRequest, onDeleteRequest, refreshRequests }) => {
+const RequestCard = ({ request, onClick, onDeleteRequest, refreshRequests }) => {
   const { user } = useUser(); 
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editForm, setEditForm] = useState(request);
@@ -302,7 +302,7 @@ const RequestCard = ({ request, onClick, onEditRequest, onDeleteRequest, refresh
       await axios.delete(`http://localhost:9000/BloodRequest/${request._id}`);
       onDeleteRequest();
       refreshRequests(); 
-    } catch (err) {
+    } catch {
       alert("Failed to delete request");
     }
   };
@@ -399,7 +399,6 @@ const Donate = () => {
   const [recipients, setRecipients] = useState([]);
   const [filteredHospital, setFilteredHospital] = useState([]);
   const [filteredRecipients, setFilteredRecipients] = useState([]);
-  const [statusFilter, setStatusFilter] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [bloodTypeFilter, setBloodTypeFilter] = useState('');
@@ -517,7 +516,6 @@ const Donate = () => {
                 <div className="flex flex-col w-90 ">
                   <Select
                     onValueChange={(value) => {
-                      setStatusFilter(value);
                       const filteredHospitals = hospitals.filter((item) => !value || item.status === value);
                       const filteredRecipients = recipients.filter((item) => !value || item.status === value);
                       setFilteredHospital(filteredHospitals);

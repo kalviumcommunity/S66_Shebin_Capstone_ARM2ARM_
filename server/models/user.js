@@ -43,6 +43,10 @@ const userSchema = new mongoose.Schema(
       required: true,
       minlength: 10
     },
+    password: {
+      type: String,
+      select: false,
+    },
 
     
     // bloodRequests: [{

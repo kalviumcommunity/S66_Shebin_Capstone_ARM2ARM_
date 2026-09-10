@@ -1,6 +1,7 @@
 const express=require("express")
 const {BloodRequest}=require("../models/bloodRequestSchema")
 const mongoose=require("mongoose")
+const { authenticate } = require("../middleware/authentication")
 
 const requestRouter=express.Router()
 
@@ -15,7 +16,7 @@ requestRouter.get("/",async(req,res)=>{
     }
 })
 
-requestRouter.post("/",async(req,res)=>{
+requestRouter.post("/", authenticate, async(req,res)=>{
     try {
         const requestData=req.body
         const requiredFields = ["requested_type", "name","contactNumber", "bloodType", "location", "units", "status","createdBy"];
@@ -25,6 +26,7 @@ requestRouter.post("/",async(req,res)=>{
         }
         const newRequest = new BloodRequest({
             ...requestData,
+            createdBy: req.user.userId,
         });
 
         await newRequest.save()
@@ -36,7 +38,7 @@ requestRouter.post("/",async(req,res)=>{
     }
 })
 
-requestRouter.put("/:id",async(req,res)=>{
+requestRouter.put("/:id", authenticate, async(req,res)=>{
     try {
         const {id}=req.params
         const {requested_type, name,contactNumber,bloodType,location,units,status}=req.body
@@ -55,7 +57,7 @@ requestRouter.put("/:id",async(req,res)=>{
     }
 })
 
-requestRouter.delete("/:id",async(req,res)=>{
+requestRouter.delete("/:id", authenticate, async(req,res)=>{
     try {
         const {id}=req.params
 

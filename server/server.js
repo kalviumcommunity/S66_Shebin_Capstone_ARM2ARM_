@@ -1,6 +1,7 @@
 const express=require("express")
+const path=require("path")
+require("dotenv").config({ path: path.join(__dirname, ".env") })
 const DbConnection =require("./db/dbConnection")
-require("dotenv").config()
 const cors=require("cors")
 const {userRouter}=require("./routes/user.route")
 const {requestRouter}=require("./routes/bloodRequest.route")
@@ -19,12 +20,14 @@ DbConnection()
 app.use("/user",userRouter)
 app.use("/BloodRequest",requestRouter)
 app.use("/findBlood",findBloodRouter)
-app.use("/DonationCamps",donationCampRouter)
+app.use("/donationCamps",donationCampRouter)
 app.use("/api",smsRouter)
 
 
 
 
-app.listen(process.env.PORT,()=>{
-    console.log(`Server is running on  http://localhost:${process.env.PORT}`)
+const PORT = process.env.PORT || 9000
+
+app.listen(PORT,()=>{
+    console.log(`Server is running on  http://localhost:${PORT}`)
 })

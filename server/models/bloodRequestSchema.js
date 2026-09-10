@@ -18,7 +18,7 @@ const bloodRequestSchema = new mongoose.Schema({
     bloodType: {
         type: String,
         required: true,
-        Enum: BloodTypeEnums
+        enum: BloodTypeEnums
     },
     location: {
         type: String,

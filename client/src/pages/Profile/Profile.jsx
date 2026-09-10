@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../lib/api";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useUser } from "@clerk/clerk-react";
 import Header from "../../components/Header";
@@ -36,7 +36,7 @@ const ProfilePage = () => {
             }
 
             const email = user.primaryEmailAddress.emailAddress;
-            const res = await axios.get("http://localhost:9000/user", { params: { email } });
+            const res = await api.get("/user", { params: { email } });
 
             if (res.data) {
                 setFormData((prev) => ({
@@ -72,7 +72,6 @@ const ProfilePage = () => {
                 setError("User email not found. Please ensure you are logged in.");
             }
 
-            // Update userType in unsafeMetadata instead of publicMetadata
             if (!user.unsafeMetadata?.userType) {
                 user.update({
                     unsafeMetadata: { userType: "donor" },
@@ -87,10 +86,10 @@ const ProfilePage = () => {
     const handleSubmit = async () => {
         try {
             if (userId) {
-                await axios.put(`http://localhost:9000/user/${userId}`, formData);
+                await api.put(`/user/${userId}`, formData);
                 alert("Profile updated successfully!");
             } else {
-                const res = await axios.post("http://localhost:9000/user/ProfileData", formData);
+                const res = await api.post("/user/ProfileData", formData);
                 setUserId(res.data.userId);
                 alert("Profile created successfully!");
             }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from "../lib/api";
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
@@ -8,78 +8,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { MapPin, Search, Users2, Hospital } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Drawer, DrawerContent } from '@/components/ui/drawer';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import Sidebar from '../components/sideBar';
 import TopNavBar from '../components/navbar';
 import RequestDetails from '../components/requestDetails';
 import NewRequest from "../components/newRequest";
-import VerticalOptionsMenu from "../components/MoreVertical";
 import EditRequest from "../components/EditRequest";
-
-const RequestCard = ({ request, onClick, onEdit, onDelete }) => {
-  const getStatusClass = (status) => {
-    switch (status) {
-      case 'Critical':
-        return 'bg-red-700 text-white';
-      case 'High':
-        return 'bg-orange-500 text-white';
-      case 'Medium':
-        return 'bg-yellow-500 text-white';
-      case 'Low':
-        return 'bg-green-700 text-white';
-      default:
-        return 'bg-gray-700 text-white';
-    }
-  };
-
-  return (
-    <div
-      className="relative p-4 bg-white rounded-lg shadow-md cursor-pointer"
-      onClick={() => onClick(request)}
-    >
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center">
-          <span className="text-red-600 font-bold text-lg mr-2">{request.bloodType}</span>
-          <h3 className="font-bold text-lg text-gray-800">{request.name}</h3>
-        </div>
-        <span className={`text-xs px-2 py-1 rounded ${getStatusClass(request.status)}`}>
-          {request.status}
-        </span>
-      </div>
-
-      <div className="flex items-center mb-2 text-sm text-gray-600">
-        <svg
-          className="w-4 h-4 mr-1"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M12 11c1.104 0 2-.896 2-2s-.896-2-2-2-2 .896-2 2 .896 2 2 2zm0 2c-2.209 0-4 1.791-4 4v1h8v-1c0-2.209-1.791-4-4-4z"
-          ></path>
-        </svg>
-        <span>{request.location}</span>
-        <span className="mx-1">•</span>
-        <span>{dayjs(request.createdAt).fromNow()}</span>
-      </div>
-
-      <p className="text-sm text-red-500 mb-2">Needed: {request.units} units</p>
-      <p className="text-sm text-gray-600">
-        Contact: <span className="font-medium">{request.contactNumber}</span>
-      </p>
-
-      {onEdit && onDelete && (
-        <div className="absolute bottom-2 right-2 z-10">
-          <VerticalOptionsMenu onEdit={onEdit} onDelete={onDelete} />
-        </div>
-      )}
-    </div>
-  );
-};
+import { RequestCard } from '../components/RequestCard';
 
 const Donate = () => {
   const { user } = useUser();
@@ -87,7 +22,6 @@ const Donate = () => {
   const [recipients, setRecipients] = useState([]);
   const [filteredHospital, setFilteredHospital] = useState([]);
   const [filteredRecipients, setFilteredRecipients] = useState([]);
-  const [statusFilter, setStatusFilter] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [bloodTypeFilter, setBloodTypeFilter] = useState('');
@@ -99,7 +33,7 @@ const Donate = () => {
 
   const fetchRequest = async () => {
     try {
-      const response = await axios.get('http://localhost:9000/BloodRequest');
+      const response = await api.get("/BloodRequest");
       const reqData = response.data.data;
 
       const hospitalData = reqData.filter((item) => item.requested_type === 'Hospital');
@@ -145,7 +79,7 @@ const Donate = () => {
 
   const handleDelete = async (requestId) => {
     try {
-      await axios.delete(`http://localhost:9000/BloodRequest/${requestId}`);
+      await api.delete(`/BloodRequest/${requestId}`);
       fetchRequest();
     } catch (error) {
       console.error(error);
@@ -158,23 +92,25 @@ const Donate = () => {
   }
 
   return (
-    <div>
+    <div className="min-h-screen flex flex-col">
       <TopNavBar />
-      <div className="flex flex-1">
+      <div className="flex flex-1 flex-col md:flex-row">
         <Sidebar />
-        <div className="flex-1 p-6 bg-gray-50 overflow-y-auto">
-          <div className='flex items-center justify-between mb-4'>
+        <main className="flex-1 p-2 sm:p-4 md:p-6 bg-gray-50 overflow-y-auto">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
             <div>
-              <h1 className="text-2xl font-bold py-1">Donate Blood</h1>
-              <p className="text-gray-500 mb-4">Your Donation Information</p>
+              <h1 className="text-xl sm:text-2xl font-bold py-1">Donate Blood</h1>
+              <p className="text-gray-500 text-sm sm:text-base">Your Donation Information</p>
             </div>
             <NewRequest onSubmit={fetchRequest} />
           </div>
 
-          <div className="p-4 bg-white rounded-lg shadow">
-            <div className="flex flex-wrap items-center gap-4 mb-2">
-              <div className="flex flex-col w-90">
-                <label className="text-sm text-gray-600 mb-1">Blood Type</label>
+          {/* Search Form */}
+          <div className="p-3 sm:p-4 bg-white rounded-lg shadow">
+            <div className="flex flex-col gap-3 sm:gap-4 md:flex-row md:items-end">
+              {/* Blood Type */}
+              <div className="w-full">
+                <label className="text-sm text-gray-600 mb-1 block">Blood Type</label>
                 <Select onValueChange={(value) => setBloodTypeFilter(value)}>
                   <SelectTrigger className="w-full border border-gray-400 px-3 py-2 text-sm rounded">
                     <SelectValue placeholder="Select blood type" />
@@ -192,46 +128,47 @@ const Donate = () => {
                 </Select>
               </div>
 
-              <div className="flex flex-col w-90">
-                <label className="text-sm text-gray-600 mb-1">Location</label>
+              {/* Location */}
+              <div className="w-full">
+                <label className="text-sm text-gray-600 mb-1 block">Location</label>
                 <div className="relative">
                   <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <input
                     type="text"
                     placeholder="Location"
-                    className="pl-10 border border-gray-400 rounded px-3 py-2 text-sm w-full"
+                    className="w-full pl-10 border border-gray-400 rounded px-3 py-2 text-sm"
                     onChange={(e) => setLocationFilter(e.target.value)}
                   />
                 </div>
               </div>
 
-              <div className="mt-6 flex justify-center">
-                <berto
-                  className="w-80 bg-[#E53E3E] text-white px-6 py-2 rounded text-sm flex items-center justify-center gap-2 hover:bg-red-700 transition"
-                  onClick={handleSearch}
-                >
-                  <Search className="w-5 h-5" />
-                  Search
-                </berto>
-              </div>
+              {/* Search Button */}
+              <button
+                className="w-full md:w-auto bg-[#E53E3E] text-white px-6 py-2 rounded text-sm flex items-center justify-center gap-2 hover:bg-red-700 transition mt-2 md:mt-0"
+                onClick={handleSearch}
+              >
+                <Search className="w-5 h-5" />
+                Search
+              </button>
             </div>
           </div>
 
-          <div className="flex flex-col py-10 h-20">
-            <h2 className="text-lg font-semibold">Donation Request</h2>
-            <Tabs defaultValue="hospital" className="h-10">
-              <div className="w-full flex items-center justify-between gap-x-4 my-4">
-                <div className="flex flex-col w-90 ">
+          {/* Results Section */}
+          <div className="py-6 sm:py-8">
+            <h2 className="text-lg sm:text-xl font-semibold mb-4">Donation Request</h2>
+            <Tabs defaultValue="hospital">
+              <div className="w-full flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
+                {/* Status Filter */}
+                <div className="w-full sm:w-auto">
                   <Select
                     onValueChange={(value) => {
-                      setStatusFilter(value);
                       const filteredHospitals = hospitals.filter((item) => !value || item.status === value);
                       const filteredRecipients = recipients.filter((item) => !value || item.status === value);
                       setFilteredHospital(filteredHospitals);
                       setFilteredRecipients(filteredRecipients);
                     }}
                   >
-                    <SelectTrigger className="w-35 border border-gray-400 px-3 py-2 text-sm rounded-lg">
+                    <SelectTrigger className="w-full sm:w-40 border border-gray-400 px-3 py-2 text-sm rounded">
                       <SelectValue placeholder="Select Status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -243,17 +180,18 @@ const Donate = () => {
                   </Select>
                 </div>
 
-                <TabsList className="bg-gray-100 rounded-full justify-end flex items-center p-1 space-x-1">
+                {/* Tabs */}
+                <TabsList className="bg-gray-100 rounded-full flex justify-start sm:justify-end p-1 space-x-1 w-full sm:w-auto overflow-x-auto">
                   <TabsTrigger
                     value="hospital"
-                    className="flex items-center px-4 py-2 rounded-full text-sm font-medium transition data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow text-gray-600 hover:bg-gray-200"
+                    className="flex items-center px-3 py-1 sm:px-4 sm:py-2 rounded-full text-sm font-medium transition data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow text-gray-600 hover:bg-gray-200 whitespace-nowrap"
                   >
                     <Hospital size={16} className="mr-2" />
                     Hospital
                   </TabsTrigger>
                   <TabsTrigger
                     value="recipient"
-                    className="flex items-center px-4 py-2 rounded-full text-sm font-medium transition data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow text-gray-600 hover:bg-gray-200"
+                    className="flex items-center px-3 py-1 sm:px-4 sm:py-2 rounded-full text-sm font-medium transition data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow text-gray-600 hover:bg-gray-200 whitespace-nowrap"
                   >
                     <Users2 size={16} className="mr-2" />
                     Recipients
@@ -269,7 +207,7 @@ const Donate = () => {
                 ) : filteredHospital.length === 0 ? (
                   <p className="text-gray-500">No Hospital requests found.</p>
                 ) : (
-                  <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                     {filteredHospital.map((request) => (
                       <RequestCard
                         key={request._id}
@@ -291,7 +229,7 @@ const Donate = () => {
                 ) : filteredRecipients.length === 0 ? (
                   <p className="text-gray-500">No Recipients found.</p>
                 ) : (
-                  <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                     {filteredRecipients.map((request) => (
                       <RequestCard
                         key={request._id}
@@ -307,14 +245,20 @@ const Donate = () => {
             </Tabs>
           </div>
 
+          {/* Drawer for Details */}
           <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen} direction="right">
-            <DrawerContent>
+            <DrawerContent className="w-full sm:w-96 max-w-full">
               {selectedItem && <RequestDetails item={selectedItem} context="donate" />}
             </DrawerContent>
           </Drawer>
 
+          {/* Edit Modal */}
           <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-            <DialogContent>
+            <DialogContent className="w-full sm:w-96 max-w-full">
+              <DialogHeader>
+                <DialogTitle>Edit Blood Request</DialogTitle>
+                <DialogDescription>Update the details of your blood request here.</DialogDescription>
+              </DialogHeader>
               {editRequest && (
                 <EditRequest
                   request={editRequest}
@@ -326,7 +270,7 @@ const Donate = () => {
               )}
             </DialogContent>
           </Dialog>
-        </div>
+        </main>
       </div>
     </div>
   );

@@ -1,8 +1,8 @@
 const express=require("express")
 const {User}=require("../models/user")
-const bcrypt=require("bcrypt")
+const bcrypt=require("bcryptjs")
 const jwt=require("jsonwebtoken")
-const { error } = require("console")
+const { authenticate } = require("../middleware/authentication")
 
 const userRouter=express.Router()
 
@@ -70,7 +70,7 @@ userRouter.get("/", async (req, res) => {
 
 userRouter.post("/ProfileData",async(req,res)=>{
     try {
-        const {name,email,age,location,weight,bloodType,contactNumber,requested_type}=req.body
+        const {name,email,age,location,weight,bloodType,contactNumber,requested_type,password}=req.body
         if(!name||!email||!age||!location||!weight||!bloodType||!contactNumber||!requested_type === undefined){
             return res.status(400).json({error:"All fields are required!!"})
         }
@@ -79,8 +79,13 @@ userRouter.post("/ProfileData",async(req,res)=>{
         if (existingUser){
             return res.status(400).json({ error: "Email already in use!" })
         }
-    
-        const newUser=new User({name,email,age,location,weight,bloodType,contactNumber,requested_type})
+
+        const userFields={name,email,age,location,weight,bloodType,contactNumber,requested_type}
+        if (password) {
+            userFields.password = await bcrypt.hash(password, 10);
+        }
+
+        const newUser=new User(userFields)
         await newUser.save()
         res.status(201).json({message:"User Profile successfully!",userId:newUser._id, Data:newUser})
 
@@ -99,18 +104,27 @@ userRouter.post("/login",async(req,res)=>{
             return res.status(400).json({ error: "Email and password are required!" })
         }
 
-        const user=await User.findOne({email})
+        const user=await User.findOne({email}).select("+password")
         if(!user){
             return res.status(401).json({ error: "Invalid credentials!" });
         }
 
-        const isMatch=await bcrypt.compare(password,user.password)
+        const isMatch=user.password && await bcrypt.compare(password,user.password)
         if(!isMatch){
             return res.status(401).json({ error: "Invalid credentials!" });
         }
 
         const token=jwt.sign({userId:user._id,email:user.email},process.env.JWT_SECRET,{expiresIn:"7d"})
-        res.status(200).json({message:"Login Successful",token,
+
+        res.cookie("token",token,{
+            httpOnly:true,
+            secure:process.env.NODE_ENV==="production",
+            sameSite:"lax"
+        })
+
+        return res.status(200).json({
+            message:"Login Successful",
+            token,
             user:{
                 id: user._id,
                 name: user.name,
@@ -118,10 +132,6 @@ userRouter.post("/login",async(req,res)=>{
                 bloodType: user.bloodType
             }
         })
-        res.cookie("token",token,{
-            httpOnly:true,
-            secure:false
-        }).json({ message: "Login successful", user: { name: user.name, email: user.email, userId: user._id } });
 
     } catch (error) {
         console.error(error)
@@ -130,11 +140,13 @@ userRouter.post("/login",async(req,res)=>{
 })
 
 
-// userRouter.post("/logout",(req,res)=>{
-//     res.clearCookie("token").json({ message: "Logged out" })
-// })
+userRouter.post("/logout",(req,res)=>{
+    res.clearCookie("token", { httpOnly: true, secure: process.env.NODE_ENV==="production", sameSite: "lax" })
+        .status(200)
+        .json({ message: "Logged out" })
+})
 
-userRouter.put("/:id", async (req, res) => {
+userRouter.put("/:id", authenticate, async (req, res) => {
     const { id } = req.params;
     const { name, email, age, location, weight, bloodType,contactNumber,requested_type} = req.body;
 
