@@ -1,10 +1,11 @@
 const express=require("express")
 const mongoose=require("mongoose")
 const {DonationCamps}=require("../models/camps")
+const { authenticate } = require("../middleware/authentication")
 
 const donationCampRouter=express.Router()
 
-donationCampRouter.post("/",async(req,res)=>{
+donationCampRouter.post("/", authenticate, async(req,res)=>{
     try {
         const campData=req.body
         const requiredFields = ["requested_type", "name","organization", "startDate","endDate","startTime","endTime", "location","contactNumber"]
@@ -43,7 +44,7 @@ donationCampRouter.get("/:id",async(req,res)=>{
     }
 })
 
-donationCampRouter.put("/:id", async (req, res) => {
+donationCampRouter.put("/:id", authenticate, async (req, res) => {
     try {
         const updatedCamp = await DonationCamps.findByIdAndUpdate(req.params.id, req.body, {new: true,runValidators: true,});
         if (!updatedCamp) {
@@ -55,7 +56,7 @@ donationCampRouter.put("/:id", async (req, res) => {
     }
 });
 
-donationCampRouter.delete("/:id", async (req, res) => {
+donationCampRouter.delete("/:id", authenticate, async (req, res) => {
     try {
         const {id}=req.params
         if (!mongoose.Types.ObjectId.isValid(id)) {

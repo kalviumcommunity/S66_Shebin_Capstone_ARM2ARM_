@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import axios from "axios";
+import api from "../lib/api";
 import Sidebar from "../components/sideBar";
 import TopNavBar from "../components/navbar";
 import { MapPin, Search, CalendarIcon } from "lucide-react";
@@ -18,8 +18,6 @@ function formatDate(date) {
         year: "numeric",
     });
 }
-
-const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const DonationCamps = () => {
     const { user } = useUser();
@@ -41,7 +39,7 @@ const DonationCamps = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`${API_BASE_URL}/donationCamps`);
+            const response = await api.get("/donationCamps");
             setLoading(true);
             const allData = response.data.data;
             setCampData(allData);
@@ -65,7 +63,7 @@ const DonationCamps = () => {
 
     const handleDelete = async (campId) => {
         try {
-            await axios.delete(`${API_BASE_URL}/donationCamps/${campId}`);
+            await api.delete(`/donationCamps/${campId}`);
             fetchData();
         } catch (error) {
             console.error(error);

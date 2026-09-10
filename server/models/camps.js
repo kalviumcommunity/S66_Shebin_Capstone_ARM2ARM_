@@ -37,10 +37,10 @@ const donationCampSchema=new mongoose.Schema({
         type: Number,
         required: true
     },
-    createdBy: {
+    createdBy:{
         type: String,
-        required: true
-    }
+        required: true,
+    },
 })
 
 const DonationCamps=mongoose.model("Donation-Camps",donationCampSchema)

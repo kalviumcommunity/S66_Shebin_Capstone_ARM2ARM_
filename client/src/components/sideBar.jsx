@@ -22,7 +22,7 @@ const Sidebar = () => {
     { path: "/findBlood", label: "Find Blood", icon: <Search className="w-5 h-5" /> },
     { path: "/donate", label: "Donate", icon: <HeartHandshake className="w-5 h-5" /> },
     { path: "/donationCamps", label: "Donation Camps", icon: <CalendarDays className="w-5 h-5" /> },
-    { path: "/leaderboard", label: "Leaderboard", icon: <Trophy className="w-5 h-5" /> },
+    // { path: "/leaderboard", label: "Leaderboard", icon: <Trophy className="w-5 h-5" /> },
     { path: "/profile", label: "Profile", icon: <User className="w-5 h-5" /> },
   ];
 

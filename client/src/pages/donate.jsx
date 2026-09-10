@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from "../lib/api";
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
@@ -16,15 +16,12 @@ import NewRequest from "../components/newRequest";
 import EditRequest from "../components/EditRequest";
 import { RequestCard } from '../components/RequestCard';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL;
-
 const Donate = () => {
   const { user } = useUser();
   const [hospitals, setHospitals] = useState([]);
   const [recipients, setRecipients] = useState([]);
   const [filteredHospital, setFilteredHospital] = useState([]);
   const [filteredRecipients, setFilteredRecipients] = useState([]);
-  const [statusFilter, setStatusFilter] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [bloodTypeFilter, setBloodTypeFilter] = useState('');
@@ -36,7 +33,7 @@ const Donate = () => {
 
   const fetchRequest = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/BloodRequest`);
+      const response = await api.get("/BloodRequest");
       const reqData = response.data.data;
 
       const hospitalData = reqData.filter((item) => item.requested_type === 'Hospital');
@@ -82,7 +79,7 @@ const Donate = () => {
 
   const handleDelete = async (requestId) => {
     try {
-      await axios.delete(`${API_BASE_URL}/BloodRequest/${requestId}`);
+      await api.delete(`/BloodRequest/${requestId}`);
       fetchRequest();
     } catch (error) {
       console.error(error);
@@ -165,7 +162,6 @@ const Donate = () => {
                 <div className="w-full sm:w-auto">
                   <Select
                     onValueChange={(value) => {
-                      setStatusFilter(value);
                       const filteredHospitals = hospitals.filter((item) => !value || item.status === value);
                       const filteredRecipients = recipients.filter((item) => !value || item.status === value);
                       setFilteredHospital(filteredHospitals);

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import axios from "axios"
+import api from "../lib/api"
 import { useUser } from "@clerk/clerk-react";
 import { CirclePlus } from 'lucide-react';
 import {Dialog,DialogContent,DialogFooter,DialogHeader,DialogTitle,DialogTrigger} from "@/components/ui/dialog"
@@ -30,8 +30,7 @@ const NewRequest = ({ onSubmit = (formData) => console.log("Submitted:", formDat
         ...formData,
         createdBy: user.id,
       };
-      const API_BASE_URL = import.meta.env.VITE_API_URL;
-      const response = await axios.post(`${API_BASE_URL}/BloodRequest`, payload);
+      const response = await api.post("/BloodRequest", payload);
       console.log("Request submitted:", response.data);
       alert("Request submitted successfully");
       onSubmit()

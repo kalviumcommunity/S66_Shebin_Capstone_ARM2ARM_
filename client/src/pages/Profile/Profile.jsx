@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../lib/api";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useUser } from "@clerk/clerk-react";
 import Header from "../../components/Header";
@@ -8,8 +8,6 @@ import TopNavBar from "../../components/navbar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-
-const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const ProfilePage = () => {
     const { user, isLoaded } = useUser(); 
@@ -38,7 +36,7 @@ const ProfilePage = () => {
             }
 
             const email = user.primaryEmailAddress.emailAddress;
-            const res = await axios.get(`${API_BASE_URL}/user`, { params: { email } });
+            const res = await api.get("/user", { params: { email } });
 
             if (res.data) {
                 setFormData((prev) => ({
@@ -88,10 +86,10 @@ const ProfilePage = () => {
     const handleSubmit = async () => {
         try {
             if (userId) {
-                await axios.put(`${API_BASE_URL}/user/${userId}`, formData);
+                await api.put(`/user/${userId}`, formData);
                 alert("Profile updated successfully!");
             } else {
-                const res = await axios.post(`${API_BASE_URL}/user/ProfileData`, formData);
+                const res = await api.post("/user/ProfileData", formData);
                 setUserId(res.data.userId);
                 alert("Profile created successfully!");
             }

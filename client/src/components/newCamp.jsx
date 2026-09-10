@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from "axios";
+import api from "../lib/api";
 import { CirclePlus } from 'lucide-react';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -41,8 +41,7 @@ const NewDonationCamp = ({ onSubmit = (formData) => console.log("Submitted:", fo
             endTime: formData.endTime?.format("HH:mm"),
             createdBy: user.id
         };
-        const API_BASE_URL = import.meta.env.VITE_API_URL;
-        const response = await axios.post(`${API_BASE_URL}/donationCamps`, payload);
+        const response = await api.post("/donationCamps", payload);
         console.log("Request submitted:", response.data);
         alert("Request submitted successfully");
         onSubmit();

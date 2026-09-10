@@ -1,5 +1,5 @@
 import React from 'react';
-import axios from "axios";
+import api from "../lib/api";
 import { DrawerClose } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { MapPin, User, Hospital, Droplet, Tag } from 'lucide-react';
@@ -21,19 +21,18 @@ const RequestDetails = ({ item, context }) => {
       ? `Hello ${item.name}, I’ve seen your request and I’m available to donate blood. Please let me know how I can help.`
       : `Hello ${item.name}, your blood type is urgently needed. Kindly respond soon.`;
     try {
-      const API_BASE_URL = import.meta.env.VITE_API_URL;
-      const response = await axios.post(`${API_BASE_URL}/api/sendSms`, {
+      const response = await api.post("/api/sendSms", {
         to: "+918139065748",
         message
       });
       if (response.data.success) {
         alert("SMS sent successfully!");
       } else {
-        alert("Failed to send SMS.");
+        alert(response.data.error || "Failed to send SMS.");
       }
     } catch (error) {
       console.error(error);
-      alert("An error occurred while sending the SMS.");
+      alert(error.response?.data?.error || "An error occurred while sending the SMS.");
     }
   };
 

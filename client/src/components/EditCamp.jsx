@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from "../lib/api";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -32,8 +32,7 @@ const EditCamp = ({ camp, onSubmit }) => {
                 startTime: formData.startTime?.format("HH:mm"),
                 endTime: formData.endTime?.format("HH:mm"),
             };
-            const API_BASE_URL = import.meta.env.VITE_API_URL;
-            await axios.put(`${API_BASE_URL}/donationCamps/${camp._id}`, payload);
+            await api.put(`/donationCamps/${camp._id}`, payload);
             alert('Camp updated successfully');
             onSubmit();
         } catch (error) {

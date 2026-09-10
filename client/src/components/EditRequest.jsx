@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from "../lib/api";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -14,8 +14,7 @@ const EditRequest = ({ request, onSubmit }) => {
 
     const handleUpdate = async () => {
         try {
-            const API_BASE_URL = import.meta.env.VITE_API_URL;
-            await axios.put(`${API_BASE_URL}/BloodRequest/${request._id}`, formData);
+            await api.put(`/BloodRequest/${request._id}`, formData);
             alert('Request updated successfully');
             onSubmit();
         } catch (error) {
