@@ -17,12 +17,13 @@ const Dashboard = () => {
     useEffect(() => {
         const fetchAllData = async () => {
             try {
+                const API_BASE_URL = import.meta.env.VITE_API_URL;
                 const email = user?.primaryEmailAddress?.emailAddress;
-                const userRes = await axios.get("http://localhost:9000/user", { params: { email } });
+                const userRes = await axios.get(`${API_BASE_URL}/user`, { params: { email } });
                 const fullUser = userRes.data;
                 if (fullUser?.name) setUserName(fullUser.name);
 
-                const allUsersRes = await axios.get("http://localhost:9000/user");
+                const allUsersRes = await axios.get(`${API_BASE_URL}/user`);
                 const users = allUsersRes.data || [];
 
                 const donors = users.filter((u) => u.requested_type === "Donor");
@@ -31,7 +32,7 @@ const Dashboard = () => {
                 setDonorCount(donors.length);
                 setBloodBankCount(banks.length);
 
-                const campRes = await axios.get("http://localhost:9000/DonationCamps");
+                const campRes = await axios.get(`${API_BASE_URL}/DonationCamps`);
                 const camps = campRes.data?.data || [];
                 setCampCount(camps.length);
             } catch (err) {
