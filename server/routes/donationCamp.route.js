@@ -13,7 +13,7 @@ donationCampRouter.post("/", authenticate, async(req,res)=>{
         if (missingFields.length > 0) {
             return res.status(400).json({ error: `Missing required fields: ${missingFields.join(", ")}` });
         }
-        const newCamp = new DonationCamps({...campData});
+        const newCamp = new DonationCamps({ ...campData, createdBy: req.user.userId });
         await newCamp.save();
         res.status(201).json(newCamp);
     } catch (error) {
@@ -46,7 +46,10 @@ donationCampRouter.get("/:id",async(req,res)=>{
 
 donationCampRouter.put("/:id", authenticate, async (req, res) => {
     try {
-        const updatedCamp = await DonationCamps.findByIdAndUpdate(req.params.id, req.body, {new: true,runValidators: true,});
+        const ownerFilter = req.user.role === "admin"
+            ? { _id: req.params.id }
+            : { _id: req.params.id, createdBy: req.user.userId };
+        const updatedCamp = await DonationCamps.findOneAndUpdate(ownerFilter, req.body, {new: true,runValidators: true,});
         if (!updatedCamp) {
             return res.status(404).json({ error: "Camp not found" });
         }
@@ -62,7 +65,8 @@ donationCampRouter.delete("/:id", authenticate, async (req, res) => {
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ error: "Invalid ID format" });
         }
-        const deletedCamp = await DonationCamps.findByIdAndDelete(id);
+        const ownerFilter = req.user.role === "admin" ? { _id: id } : { _id: id, createdBy: req.user.userId };
+        const deletedCamp = await DonationCamps.findOneAndDelete(ownerFilter);
         if (!deletedCamp) {
             return res.status(404).json({ error: "Camp not found" });
         }

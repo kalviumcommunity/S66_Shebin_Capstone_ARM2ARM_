@@ -1,9 +1,9 @@
 const express = require('express');
 const smsRouter=express.Router()
-const { authenticate } = require("../middleware/authentication")
+const { authenticate, authorize } = require("../middleware/authentication")
 const client=require("twilio")(process.env.TWILIO_ACC_SID, process.env.TWILIO_AUTH_TOKEN)
 
-smsRouter.post("/sendSms", authenticate, async(req,res)=>{
+smsRouter.post("/sendSms", authenticate, authorize("admin"), async(req,res)=>{
     const {message,to}=req.body
     const recipient = to || process.env.TO_NUMBER
     const from = process.env.TWILIO_FROM_NUMBER

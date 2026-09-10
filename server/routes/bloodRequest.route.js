@@ -19,7 +19,7 @@ requestRouter.get("/",async(req,res)=>{
 requestRouter.post("/", authenticate, async(req,res)=>{
     try {
         const requestData=req.body
-        const requiredFields = ["requested_type", "name","contactNumber", "bloodType", "location", "units", "status","createdBy"];
+        const requiredFields = ["requested_type", "name","contactNumber", "bloodType", "location", "units", "status"];
         const missingFields = requiredFields.filter(field => !requestData[field]);
         if (missingFields.length > 0) {
             return res.status(400).json({ error: `Missing required fields: ${missingFields.join(", ")}` });
@@ -43,7 +43,8 @@ requestRouter.put("/:id", authenticate, async(req,res)=>{
         const {id}=req.params
         const {requested_type, name,contactNumber,bloodType,location,units,status}=req.body
 
-        const updatedRequest=await BloodRequest.findByIdAndUpdate(id,{requested_type, name,contactNumber,bloodType,location,units,status},{ new: true })
+        const ownerFilter = req.user.role === "admin" ? { _id: id } : { _id: id, createdBy: req.user.userId };
+        const updatedRequest=await BloodRequest.findOneAndUpdate(ownerFilter,{requested_type, name,contactNumber,bloodType,location,units,status},{ new: true })
 
         if (!updatedRequest) {
             return res.status(404).json({ error: "Entry not found." });
@@ -64,7 +65,8 @@ requestRouter.delete("/:id", authenticate, async(req,res)=>{
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ error: "Invalid ID format" });
         }
-        const deleteRequest=await BloodRequest.findByIdAndDelete(id)
+        const ownerFilter = req.user.role === "admin" ? { _id: id } : { _id: id, createdBy: req.user.userId };
+        const deleteRequest=await BloodRequest.findOneAndDelete(ownerFilter)
 
         if (!deleteRequest) {
             return res.status(404).json({ error: "Request not found" });

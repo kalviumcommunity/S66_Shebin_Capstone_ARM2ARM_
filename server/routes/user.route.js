@@ -2,7 +2,7 @@ const express=require("express")
 const {User}=require("../models/user")
 const bcrypt=require("bcryptjs")
 const jwt=require("jsonwebtoken")
-const { authenticate } = require("../middleware/authentication")
+const { authenticate, authorizeOwnerOrRole } = require("../middleware/authentication")
 
 const userRouter=express.Router()
 
@@ -50,7 +50,7 @@ const userRouter=express.Router()
     
 // })
 
-userRouter.get("/", async (req, res) => {
+userRouter.get("/", authenticate, async (req, res) => {
     try {
       if (req.query.email) {
         // If email is provided, fetch a single user
@@ -114,7 +114,11 @@ userRouter.post("/login",async(req,res)=>{
             return res.status(401).json({ error: "Invalid credentials!" });
         }
 
-        const token=jwt.sign({userId:user._id,email:user.email},process.env.JWT_SECRET,{expiresIn:"7d"})
+        const token=jwt.sign(
+            { userId: user._id.toString(), email: user.email, role: user.role },
+            process.env.JWT_SECRET,
+            { expiresIn:"7d" }
+        )
 
         res.cookie("token",token,{
             httpOnly:true,
@@ -129,7 +133,8 @@ userRouter.post("/login",async(req,res)=>{
                 id: user._id,
                 name: user.name,
                 email: user.email,
-                bloodType: user.bloodType
+                bloodType: user.bloodType,
+                role: user.role
             }
         })
 
@@ -146,7 +151,7 @@ userRouter.post("/logout",(req,res)=>{
         .json({ message: "Logged out" })
 })
 
-userRouter.put("/:id", authenticate, async (req, res) => {
+userRouter.put("/:id", authenticate, authorizeOwnerOrRole("id", "admin"), async (req, res) => {
     const { id } = req.params;
     const { name, email, age, location, weight, bloodType,contactNumber,requested_type} = req.body;
 

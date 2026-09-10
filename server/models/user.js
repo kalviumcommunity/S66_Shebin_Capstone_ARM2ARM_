@@ -18,6 +18,12 @@ const userSchema = new mongoose.Schema(
       required: true,
       enum: ["Donor", "Blood-Banks","Hospital","Recipient"]
     },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+      required: true,
+    },
     age: {
       type: Number,
       min: 18,
